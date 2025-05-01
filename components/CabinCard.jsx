@@ -10,19 +10,17 @@ const CabinCard = ({ cabin }) => {
       {/* Left: Image Section */}
       <View className="w-40 h-40">
         <Image
-          source={{ uri: image }} // Assuming image is a URL or a local file path
-          style={{
-            width: "100%",
-            height: "100%",
-            borderRadius: 8,
-          }} // Adjust the styles as needed
+          source={{ uri: image }}
+          className="w-full h-full rounded-xl"
           resizeMode="cover"
         />
       </View>
 
       {/* Right: Info Section */}
       <View className="flex-1 p-3">
-        <Text className="text-yellow-600 font-bold text-xl">Cabin {name}</Text>
+        <Text className="text-yellow-600 font-bold text-base">
+          Cabin {name}
+        </Text>
 
         <Text className="text-white my-1 flex-row items-center">
           <FontAwesome name="users" size={18} color="#d2af84" />

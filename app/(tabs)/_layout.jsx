@@ -2,7 +2,7 @@ import { Tabs } from "expo-router";
 import { View, Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-const TabIcon = ({ focused, iconName, title }: any) => {
+const TabIcon = ({ focused, iconName, title }) => {
   if (!focused) {
     return (
       <View className="size-full justify-center items-center mt-4   ">

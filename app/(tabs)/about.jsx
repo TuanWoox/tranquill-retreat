@@ -1,5 +1,6 @@
 import { ImageBackground, ScrollView, Text, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function About() {
   return (
@@ -7,34 +8,83 @@ export default function About() {
       source={require("../../assets/images/aboutBackground.jpg")}
       className="flex-1"
     >
+      {/* Gradient overlay for better text contrast */}
+      <View className="absolute inset-0 bg-gradient-to-b from-black/30 to-black/70" />
+
+      <StatusBar style="light" />
+
       <ScrollView
         className="flex-1"
         contentContainerStyle={{
           padding: 20,
-          paddingBottom: 40,
-          backgroundColor: "rgba(20, 28, 36, 0.6)", // Semi-transparent overlay
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
+          paddingBottom: 60,
+          flexGrow: 1,
         }}
       >
-        <StatusBar style="light" />
-        <View className="items-center mb-8 mt-12">
-          <Text className="text-4xl font-bold text-white tracking-tight mb-4 shadow-md">
+        {/* Header Section */}
+        <View className="items-center mt-16 mb-10">
+          <View className="w-16 h-1 bg-amber-400 rounded-full mb-6" />
+          <Text className="text-4xl font-bold text-white tracking-tight mb-3 text-center">
             The Tranquility Retreat
           </Text>
-          <Text className="text-xl font-medium text-white/90 text-center px-4">
+          <Text className="text-xl font-medium text-amber-200 text-center px-4 italic">
             Your Perfect Nature Getaway
           </Text>
         </View>
-        <View className="bg-white/10 rounded-xl p-6 shadow-lg">
-          <Text className="text-lg text-white/85 leading-7 text-center">
+
+        {/* Main Content Card */}
+        <View className="bg-black/40 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-white/10 mb-10">
+          <Text className="text-lg text-white leading-7 text-center mb-8">
             Discover serenity in our cozy cabins, crafted for families, couples,
-            or solo travelers seeking peace. Surrounded by nature’s beauty,
+            or solo travelers seeking peace. Surrounded by nature's beauty,
             enjoy comfort, warmth, and privacy in a tranquil escape.
           </Text>
+
+          {/* Features Section */}
+          <View className="space-y-6">
+            <FeatureItem
+              icon="leaf"
+              title="Eco-Friendly Design"
+              description="Our cabins are built sustainably with local materials to minimize environmental impact."
+            />
+
+            <FeatureItem
+              icon="water"
+              title="Natural Surroundings"
+              description="Located near streams, forests, and wildlife for a truly immersive nature experience."
+            />
+
+            <FeatureItem
+              icon="bed"
+              title="Premium Comfort"
+              description="Handcrafted furniture, luxury bedding, and modern amenities for a comfortable stay."
+            />
+          </View>
+        </View>
+
+        {/* Quote Section */}
+        <View className="items-center mb-8">
+          <Text className="text-amber-100 text-lg italic text-center">
+            "Nature is not a place to visit. It is home."
+          </Text>
+          <Text className="text-amber-200 mt-2">— Gary Snyder</Text>
         </View>
       </ScrollView>
     </ImageBackground>
+  );
+}
+
+// Component for feature items
+function FeatureItem({ icon, title, description }) {
+  return (
+    <View className="flex-row space-x-4 m-2">
+      <View className="w-12 h-12 rounded-full bg-amber-900/50 items-center justify-center">
+        <Ionicons name={icon} size={24} color="#fcd34d" />
+      </View>
+      <View className="flex-1 ml-2">
+        <Text className="text-amber-200 font-bold text-lg mb-1">{title}</Text>
+        <Text className="text-white/80">{description}</Text>
+      </View>
+    </View>
   );
 }
