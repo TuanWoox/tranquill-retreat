@@ -18,18 +18,14 @@ export default function Signup() {
     control,
     handleSubmit,
     formState: { errors },
-    reset,
-    watch,
     setValue,
   } = useForm();
   const { signUpFn, isLoading, error } = useSignUp();
   const [datePickerVisible, setDatePickerVisible] = useState(false);
 
   const onSubmit = async (data) => {
-    // Handle form submission logic (e.g., Supabase signup)
     try {
       signUpFn(data);
-      reset();
     } catch (error) {
       Alert.alert("Signup Error", error.message);
     }

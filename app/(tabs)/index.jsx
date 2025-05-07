@@ -8,22 +8,35 @@ import {
 import { useCabins } from "../../hooks/useCabins";
 import Spinner from "@/components/Spinner";
 import CabinList from "@/components/CabinList";
-import { useAuthSession } from "../../hooks/useAuthSession";
+import { useGetInformation } from "@/hooks/useGetInformation";
+
 export default function Index() {
   const { cabins, isCabinsLoading, cabinsError } = useCabins();
-  const { userInfo, session, userInfoLoading } = useAuthSession();
-  const greetingText = session
-    ? userInfoLoading
-      ? "Loading your info..."
-      : `Welcome back ${userInfo?.fullName ?? "User"}`
-    : "Welcome, Visitor!";
+  const { userInfo, isLoading: userInfoLoading, error } = useGetInformation();
+
+  // Determine the username to display - if logged in show fullname, otherwise show "Visitor"
+  const displayName =
+    userInfo && userInfo.foundUser?.fullName
+      ? userInfo.foundUser?.fullName
+      : "Visitor";
+
   return (
     <ImageBackground
       source={require("../../assets/images/aboutBackground.jpg")}
-      className="flex-1"
+      style={{ width: "100%", height: "100%" }}
+      resizeMode="cover"
     >
       {/* Dark overlay for better text readability */}
-      <View className="absolute inset-0 bg-[rgb(20,28,36)] opacity-70" />
+      <View
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: "rgba(20,28,36,0.7)",
+        }}
+      />
 
       <ScrollView
         contentContainerStyle={{
@@ -36,7 +49,7 @@ export default function Index() {
             Hello There
           </Text>
           <Text className="text-lg font-semibold text-white">
-            {greetingText}
+            {displayName}
           </Text>
         </View>
         <View className="mt-2 p-6">

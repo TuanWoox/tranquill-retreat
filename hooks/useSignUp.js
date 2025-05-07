@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { signUp } from "../services/data-service";
+import { signUp } from "../services/authService";
 import { router } from "expo-router";
 
 export function useSignUp() {
@@ -10,8 +10,7 @@ export function useSignUp() {
   } = useMutation({
     mutationFn: signUp,
     onSuccess: (data) => {
-      // Navigate to login screen after successful sign-up
-      router.replace("/auth/login"); // added slash for clarity
+      router.replace("/auth/login");
     },
   });
 
