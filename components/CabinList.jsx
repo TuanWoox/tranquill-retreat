@@ -3,9 +3,9 @@ import CabinCard from "./CabinCard";
 function CabinList({ cabins }) {
   return (
     <FlatList
-      data={cabins}
+      data={cabins.cabins}
       renderItem={({ item }) => <CabinCard cabin={item} />}
-      keyExtractor={(item) => item.id.toString()}
+      keyExtractor={(item) => item._id}
       contentContainerStyle={{
         gap: 20,
         paddingRight: 5,

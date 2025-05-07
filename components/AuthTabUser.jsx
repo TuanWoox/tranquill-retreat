@@ -1,10 +1,11 @@
+import { useAuthContext } from "@/context/AuthContext";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
-import { useLogOut } from "../hooks/useLogOut";
+import { useLogOut } from "@/hooks/useLogOut";
 function AuthTabUser() {
   const router = useRouter();
-  const { logOutFn } = useLogOut();
+  const logout = useLogOut();
   return (
     <View className="flex-1 items-center justify-center">
       <View className="mb-6">
@@ -29,7 +30,7 @@ function AuthTabUser() {
         </TouchableOpacity>
         <TouchableOpacity
           className="w-full bg-[#d2af84] px-4 py-3 rounded-md mt-3"
-          onPress={logOutFn}
+          onPress={logout}
         >
           <Text className="text-black text-center font-semibold">
             Đăng xuất

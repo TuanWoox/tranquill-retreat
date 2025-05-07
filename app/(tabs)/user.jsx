@@ -1,13 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
 import { ImageBackground, Text, TouchableOpacity, View } from "react-native";
-import { useAuthSession } from "@/hooks/useAuthSession";
 import NotAuthTabUser from "@/components/NotAuthTabUser";
 import AuthTabUser from "@/components/AuthTabUser";
 import { useAuthContext } from "@/context/AuthContext";
 
 export default function User() {
   const { isAuthenticated } = useAuthContext();
-
   return (
     <ImageBackground
       source={require("../../assets/images/aboutBackground.jpg")}

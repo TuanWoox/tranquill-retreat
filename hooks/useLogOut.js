@@ -1,22 +1,19 @@
-import { useMutation } from "@tanstack/react-query";
-import { logOut } from "../services/data-service";
-import { router } from "expo-router";
-import queryClient from "@/config/reactQuery";
-export function useLogOut() {
-  const {
-    mutate: logOutFn,
-    isLoading,
-    error,
-  } = useMutation({
-    mutationFn: logOut,
-    onSuccess: (data) => {
+import { useAuthContext } from "../context/AuthContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import queryClient from "../config/reactQuery";
+
+export const useLogOut = () => {
+  const { dispatch } = useAuthContext();
+
+  const logout = async () => {
+    try {
+      await AsyncStorage.removeItem("jwt");
       queryClient.removeQueries(["userInfo"]);
-      router.replace("/(tabs)");
-    },
-  });
-  return {
-    logOutFn,
-    isLoading,
-    error,
+    } catch (err) {
+      console.error("Failed to remove JWT or clear cache", err);
+    }
+    dispatch({ type: "LOGOUT" });
   };
-}
+
+  return logout; // ✅ return the function properly
+};

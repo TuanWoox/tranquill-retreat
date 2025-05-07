@@ -1,7 +1,7 @@
 // context/AuthContext.js
 import { createContext, useContext, useEffect, useReducer } from "react";
 import { validateJWT } from "../services/authService";
-import Spinner from "../components/Spinner";
+import CabinSpinner from "@/components/CabinSpinner";
 
 // Initial state for authentication
 const initialState = {
@@ -67,7 +67,7 @@ const AuthProvider = ({ children }) => {
   }, []);
 
   if (state.loading) {
-    return <Spinner />;
+    return <CabinSpinner />;
   }
 
   return (
