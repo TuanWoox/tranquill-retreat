@@ -1,4 +1,3 @@
-import { Ionicons } from "@expo/vector-icons";
 import { ImageBackground, Text, TouchableOpacity, View } from "react-native";
 import NotAuthTabUser from "@/components/NotAuthTabUser";
 import AuthTabUser from "@/components/AuthTabUser";

@@ -10,3 +10,13 @@ export const getInformation = async () => {
     throw { message: errMsg };
   }
 };
+export const updateProfile = async (data) => {
+  try {
+    const response = await axiosAuth.put(`${API_URL}/user/updateProfile`, data);
+    return response.data;
+  } catch (error) {
+    const errMsg =
+      error.response?.data?.message || "Không thể cập nhật thông tin";
+    throw { message: errMsg };
+  }
+};

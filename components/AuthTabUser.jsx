@@ -14,7 +14,7 @@ function AuthTabUser() {
       <View className="w-72 space-y-4">
         <TouchableOpacity
           className="w-70 bg-[#d2af84] px-4 py-3 rounded-md"
-          onPress={() => router.push("/auth/login")}
+          onPress={() => router.push("/user/booking")}
         >
           <Text className="text-black text-center font-semibold">
             Quản lí booking
@@ -22,7 +22,7 @@ function AuthTabUser() {
         </TouchableOpacity>
         <TouchableOpacity
           className="w-full bg-[#d2af84] px-4 py-3 rounded-md mt-3"
-          onPress={() => router.push("/auth/signup")}
+          onPress={() => router.push("/user/profile")}
         >
           <Text className="text-black text-center font-semibold">
             Chỉnh sửa thông tin

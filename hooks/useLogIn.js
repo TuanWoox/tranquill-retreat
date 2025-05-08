@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { logIn } from "../services/authService";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Toast from "react-native-toast-message";
 import { router } from "expo-router";
 import { useAuthContext } from "@/context/AuthContext";
 
@@ -24,6 +25,11 @@ export function useLogIn() {
     onError: (err) => {
       const msg = error?.message || "Login failed";
       dispatch({ type: "LOGIN_FAILURE", payload: msg });
+      Toast.show({
+        type: "error",
+        text1: "Lỗi",
+        text2: err?.message || "Có lỗi xảy ra khi đăng nhập",
+      });
     },
   });
 
