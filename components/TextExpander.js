@@ -1,29 +1,41 @@
 import React, { useState } from "react";
 import { Text, TouchableOpacity, StyleSheet } from "react-native";
 
-function TextExpander({ children }) {
+function TextExpander({
+  children,
+  style,
+  buttonTextStyle,
+  maxWords = 40,
+  defaultColor = "#1D4ED8",
+}) {
   const [isExpanded, setIsExpanded] = useState(false);
+
+  // Truncate text if not expanded
   const displayText = isExpanded
     ? children
-    : children.split(" ").slice(0, 40).join(" ") + "...";
+    : children.split(" ").slice(0, maxWords).join(" ") + "...";
+
+  // Merge default and custom styles
+  const defaultStyles = StyleSheet.create({
+    text: {
+      ...style,
+    },
+    buttonText: {
+      color: defaultColor,
+      textDecorationLine: "underline",
+    },
+  });
 
   return (
-    <Text>
+    <Text style={defaultStyles.text}>
       {displayText}{" "}
       <TouchableOpacity onPress={() => setIsExpanded(!isExpanded)}>
-        <Text style={styles.buttonText}>
+        <Text style={[defaultStyles.buttonText, buttonTextStyle]}>
           {isExpanded ? "Show less" : "Show more"}
         </Text>
       </TouchableOpacity>
     </Text>
   );
 }
-
-const styles = StyleSheet.create({
-  buttonText: {
-    color: "#1D4ED8", // Primary color
-    textDecorationLine: "underline",
-  },
-});
 
 export default TextExpander;

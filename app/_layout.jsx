@@ -1,5 +1,5 @@
+// ./app/_layout.jsx  (or wherever your RootLayout lives)
 import { Stack } from "expo-router";
-
 import "../global.css";
 import { StatusBar } from "react-native";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -30,6 +30,10 @@ export default function RootLayout() {
           />
           <Stack.Screen
             name="admin/settingAdjust"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="cabins/[cabinId]"
             options={{ headerShown: false }}
           />
         </Stack>

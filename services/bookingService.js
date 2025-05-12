@@ -47,3 +47,31 @@ export const updateBooking = async (data) => {
     throw { message: errMsg };
   }
 };
+export const createBooking = async (data) => {
+  try {
+    // Send data directly without wrapping in another object
+    const response = await axiosAuth.post(
+      `${API_URL}/booking/createBooking`,
+      data
+    );
+    return response.data;
+  } catch (error) {
+    const errMsg = error.response?.data?.message || "Không thể tạo lịch mới";
+    throw { message: errMsg };
+  }
+};
+
+export const getBookedDates = async (data) => {
+  // Extract cabinId correctly from the query key
+  const cabinId = data.queryKey[1].cabinId;
+  try {
+    // Use path parameter format /:cabinId instead of query parameter
+    const response = await axiosAuth.get(
+      `${API_URL}/booking/getBookedDates/${cabinId}`
+    );
+    return response.data;
+  } catch (error) {
+    const errMsg = error.response?.data?.message || "Không thể lấy lịch đã đặt";
+    throw { message: errMsg };
+  }
+};

@@ -1,44 +1,46 @@
 import React from "react";
-import { View, Text, Image, StyleSheet } from "react-native";
-import { FontAwesome } from "@expo/vector-icons"; // For icons
-import TextExpander from "@/components/TextExpander"; // Assuming this is compatible with React Native
+import { View, Text, Image, StyleSheet, Dimensions } from "react-native";
+import { FontAwesome5 } from "@expo/vector-icons";
+import TextExpander from "@/components/TextExpander";
+
+const { width } = Dimensions.get("window");
 
 function Cabin({ cabin }) {
-  const { id, name, maxCapacity, regularPrice, discount, image, description } =
+  const { name, maxCapacity, regularPrice, discount, image, description } =
     cabin;
+  const discountedPrice = discount > 0 ? regularPrice - discount : null;
 
   return (
     <View style={styles.container}>
-      <View style={styles.imageContainer}>
-        <Image source={{ uri: image }} style={styles.image} />
-      </View>
+      <View style={styles.card}>
+        <Image source={{ uri: image }} style={styles.image} blurRadius={1} />
+        <View style={styles.overlay} />
 
-      <View style={styles.details}>
-        <Text style={styles.title}>Cabin {name}</Text>
-
-        <Text style={styles.description}>
-          <TextExpander>{description}</TextExpander>
-        </Text>
-
-        <View style={styles.infoList}>
-          <View style={styles.infoItem}>
-            <FontAwesome name="users" size={20} color="#6B7280" />
-            <Text style={styles.infoText}>
-              For up to <Text style={styles.bold}>{maxCapacity}</Text> guests
-            </Text>
+        <View style={styles.contentContainer}>
+          <View style={styles.headerContainer}>
+            <Text style={styles.title}>{name}</Text>
+            <View style={styles.capacityBadge}>
+              <FontAwesome5 name="users" size={16} color="#FBBF24" />
+              <Text style={styles.capacityText}>{maxCapacity} Guests</Text>
+            </View>
           </View>
-          <View style={styles.infoItem}>
-            <FontAwesome name="map-marker" size={20} color="#6B7280" />
-            <Text style={styles.infoText}>
-              Located in the heart of the{" "}
-              <Text style={styles.bold}>Dolomites</Text> (Italy)
-            </Text>
-          </View>
-          <View style={styles.infoItem}>
-            <FontAwesome name="eye-slash" size={20} color="#6B7280" />
-            <Text style={styles.infoText}>
-              Privacy <Text style={styles.bold}>100%</Text> guaranteed
-            </Text>
+
+          <View style={styles.detailsContainer}>
+            <TextExpander style={styles.descriptionText}>
+              {description}
+            </TextExpander>
+
+            <View style={styles.priceContainer}>
+              {discountedPrice ? (
+                <View style={styles.pricingWrapper}>
+                  <Text style={styles.discountedPrice}>${discountedPrice}</Text>
+                  <Text style={styles.originalPrice}>${regularPrice}</Text>
+                </View>
+              ) : (
+                <Text style={styles.price}>${regularPrice}</Text>
+              )}
+              <Text style={styles.perNight}>/ night</Text>
+            </View>
           </View>
         </View>
       </View>
@@ -48,50 +50,108 @@ function Cabin({ cabin }) {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
-    borderWidth: 1,
-    borderColor: "#374151",
-    padding: 16,
-    marginBottom: 24,
+    flex: 1,
+    alignItems: "center",
+    marginVertical: 16,
   },
-  imageContainer: {
-    flex: 3,
-    marginRight: 16,
+  card: {
+    width: width - 32,
+    height: 380,
+    borderRadius: 24,
+    overflow: "hidden",
+    backgroundColor: "#FFFFFF",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.2,
+    shadowRadius: 12,
+    elevation: 15,
   },
   image: {
-    width: "100%",
-    height: 150,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     resizeMode: "cover",
   },
-  details: {
-    flex: 4,
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  contentContainer: {
+    flex: 1,
+    justifyContent: "flex-end",
+    padding: 20,
+  },
+  headerContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16,
   },
   title: {
     fontSize: 24,
-    fontWeight: "bold",
+    fontWeight: "800",
     color: "#FBBF24",
-    marginBottom: 8,
+    maxWidth: "70%",
   },
-  description: {
-    fontSize: 16,
-    color: "#9CA3AF",
-    marginBottom: 16,
-  },
-  infoList: {
-    marginTop: 8,
-  },
-  infoItem: {
+  capacityBadge: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 8,
+    backgroundColor: "rgba(255,255,255,0.2)",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 20,
   },
-  infoText: {
-    fontSize: 16,
-    color: "#9CA3AF",
+  capacityText: {
+    color: "#FBBF24",
     marginLeft: 8,
+    fontSize: 14,
+    fontWeight: "600",
   },
-  bold: {
-    fontWeight: "bold",
+  detailsContainer: {
+    backgroundColor: "rgba(0,0,0,0.5)",
+    borderRadius: 16,
+    padding: 16,
+  },
+  descriptionText: {
+    color: "#CBD5E1", // Slightly brighter for better readability
+    fontSize: 15,
+    marginBottom: 16,
+    lineHeight: 22,
+  },
+  priceContainer: {
+    flexDirection: "row",
+    alignItems: "baseline", // Changed to baseline for better alignment
+    justifyContent: "flex-start", // Changed to start alignment
+    alignItems: "center",
+  },
+  pricingWrapper: {
+    flexDirection: "row",
+    alignItems: "baseline",
+  },
+  price: {
+    fontSize: 26,
+    fontWeight: "800",
+    color: "#10B981",
+    marginRight: 8, // Added margin between price and per night
+  },
+  discountedPrice: {
+    fontSize: 26,
+    fontWeight: "800",
+    color: "#10B981",
+    marginRight: 8, // Consistent margin
+  },
+  originalPrice: {
+    fontSize: 18,
+    color: "#E5E7EB",
+    textDecorationLine: "line-through",
+    marginRight: 8, // Added margin
+  },
+  perNight: {
+    color: "#F3F4F6",
+    fontSize: 14, // Slightly smaller
+    marginBottom: 2, // Adjusted to align better
   },
 });
 

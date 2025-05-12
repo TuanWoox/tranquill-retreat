@@ -1,143 +1,183 @@
 import React from "react";
-import { View, Text, Button, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+  TouchableOpacity,
+} from "react-native";
 import { Calendar } from "react-native-calendars";
-import { differenceInDays, isWithinInterval } from "date-fns";
-import { useReservation } from "./ReservationContext";
+import { differenceInDays } from "date-fns";
+import { useGetBookedDates } from "@/hooks/useGetBookedDates";
 
-function isAlreadyBooked(range, datesArr) {
-  return (
-    range.from &&
-    range.to &&
-    datesArr.some((date) =>
-      isWithinInterval(new Date(date), { start: range.from, end: range.to })
-    )
-  );
-}
+const { width } = Dimensions.get("window");
 
-function DateSelector({ settings, cabin, bookedDates }) {
-  const { range, setRange, resetRange } = useReservation();
-  const displayRange = isAlreadyBooked(range, bookedDates) ? {} : range;
-  const { regularPrice, discount } = cabin;
-  const numNights = differenceInDays(displayRange.to, displayRange.from);
-  const cabinPrice = numNights * (regularPrice - discount);
+export default function DateSelector({
+  settings,
+  cabin,
+  dateRange,
+  onDateChange,
+  onReset,
+}) {
+  const { bookedDates = [], isLoading } = useGetBookedDates(cabin?._id);
+  const { from, to } = dateRange;
+  // Compute number of nights & price
+  const numNights = from && to ? differenceInDays(to, from) : 0;
+  const nightlyPrice = cabin.discount
+    ? cabin.regularPrice - cabin.discount
+    : cabin.regularPrice;
+  const totalPrice = numNights * nightlyPrice;
 
-  const minBookingLength = settings.miniBookingLength;
-
-  const handleDayPress = (day) => {
-    if (!range.from || (range.from && range.to)) {
-      setRange({ from: new Date(day.dateString), to: null });
-    } else {
-      setRange({ ...range, to: new Date(day.dateString) });
+  // Build markedDates for react-native-calendars
+  const marked = {};
+  if (from)
+    marked[from.toISOString().split("T")[0]] = {
+      startingDay: true,
+      color: "#10B981",
+    };
+  if (to)
+    marked[to.toISOString().split("T")[0]] = {
+      endingDay: true,
+      color: "#10B981",
+    };
+  if (from && to) {
+    // fill in between
+    let cursor = new Date(from);
+    while (cursor < to) {
+      cursor = new Date(cursor.setDate(cursor.getDate() + 1));
+      const d = cursor.toISOString().split("T")[0];
+      if (d !== to.toISOString().split("T")[0]) {
+        marked[d] = { color: "#A7F3D0" };
+      }
     }
+  }
+
+  // Disable past and booked dates - Use safe array access
+  const disabled = {};
+  // Use optional chaining to safely handle undefined bookedDates
+  bookedDates?.forEach((d) => {
+    if (d) {
+      // Add additional check for each date item
+      const key = new Date(d).toISOString().split("T")[0];
+      disabled[key] = { disabled: true, disableTouchEvent: true };
+    }
+  });
+  // Handler when user selects a day
+  const onDayPress = (day) => {
+    const selected = new Date(day.dateString);
+    // if no from, start new range
+    if (!from || (from && to)) {
+      onDateChange({ from: selected, to: null });
+      return;
+    }
+
+    // if selecting backwards, restart
+    if (selected <= from) {
+      onDateChange({ from: selected, to: null });
+      return;
+    }
+
+    const length = differenceInDays(selected, from);
+    if (
+      length < settings.minBookingLength ||
+      length > settings.maxBookingLength
+    ) {
+      // ignore or you could flash a warning
+      return;
+    }
+
+    // finalize range
+    onDateChange({ from, to: selected });
   };
 
-  const markedDates = {};
-  if (range.from) {
-    markedDates[range.from.toISOString().split("T")[0]] = {
-      startingDay: true,
-      color: "#70d7c7",
-      textColor: "white",
-    };
-  }
-  if (range.to) {
-    markedDates[range.to.toISOString().split("T")[0]] = {
-      endingDay: true,
-      color: "#70d7c7",
-      textColor: "white",
-    };
-  }
-  if (range.from && range.to) {
-    let currentDate = new Date(range.from);
-    while (currentDate <= range.to) {
-      const dateString = currentDate.toISOString().split("T")[0];
-      if (!markedDates[dateString]) {
-        markedDates[dateString] = { color: "#d7f0e3", textColor: "black" };
-      }
-      currentDate.setDate(currentDate.getDate() + 1);
-    }
-  }
-
-  bookedDates.forEach((date) => {
-    const dateString = new Date(date).toISOString().split("T")[0];
-    markedDates[dateString] = { disabled: true, disableTouchEvent: true };
-  });
-
   return (
-    <View style={styles.container}>
+    <View style={styles.wrapper}>
       <Calendar
-        markingType={"period"}
-        markedDates={markedDates}
-        onDayPress={handleDayPress}
+        style={styles.calendar}
+        current={new Date().toISOString().split("T")[0]}
         minDate={new Date().toISOString().split("T")[0]}
+        onDayPress={onDayPress}
+        markingType={"period"}
+        markedDates={{ ...marked, ...disabled }}
+        theme={{
+          todayTextColor: "#FBBF24",
+          arrowColor: "#FBBF24",
+          monthTextColor: "#FBBF24",
+          dayTextColor: "#E5E7EB",
+          calendarBackground: "#1E293B",
+          textDisabledColor: "#6B7280",
+        }}
       />
 
-      <View style={styles.priceContainer}>
+      <View style={styles.summary}>
         <View>
-          <Text style={styles.priceText}>
-            {discount > 0 ? (
-              <>
-                <Text style={styles.discountedPrice}>
-                  ${regularPrice - discount}
-                </Text>
-                <Text style={styles.originalPrice}> ${regularPrice}</Text>
-              </>
-            ) : (
-              <Text style={styles.discountedPrice}>${regularPrice}</Text>
-            )}
-            <Text> /night</Text>
+          <Text style={styles.priceLabel}>
+            {nightlyPrice.toLocaleString("en-US", {
+              style: "currency",
+              currency: "USD",
+            })}{" "}
+            / night
           </Text>
-          {numNights ? (
-            <View style={styles.totalContainer}>
-              <Text style={styles.nightsText}>× {numNights} nights</Text>
-              <Text style={styles.totalText}>Total: ${cabinPrice}</Text>
-            </View>
-          ) : null}
+          {numNights > 0 && (
+            <Text style={styles.totalLabel}>
+              {numNights} night{numNights !== 1 ? "s" : ""} ={" "}
+              {totalPrice.toLocaleString("en-US", {
+                style: "currency",
+                currency: "USD",
+              })}
+            </Text>
+          )}
         </View>
-
-        {displayRange.from || displayRange.to ? (
-          <Button title="Clear" onPress={resetRange} />
-        ) : null}
+        {(from || to) && (
+          <TouchableOpacity style={styles.clearBtn} onPress={onReset}>
+            <Text style={styles.clearText}>Clear</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  wrapper: {
+    marginVertical: 16,
+    borderRadius: 12,
+    overflow: "hidden",
+    width: width - 32,
+    alignSelf: "center",
+    backgroundColor: "#1E293B",
+  },
+  calendar: {
+    borderBottomWidth: 1,
+    borderBottomColor: "#334155",
+  },
+  summary: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     padding: 16,
-    backgroundColor: "#fff",
+    backgroundColor: "#334155",
   },
-  priceContainer: {
-    marginTop: 16,
-    padding: 16,
-    backgroundColor: "#f5f5f5",
-    borderRadius: 8,
-  },
-  priceText: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  discountedPrice: {
-    fontSize: 20,
-    color: "#4caf50",
-  },
-  originalPrice: {
+  priceLabel: {
+    color: "#FBBF24",
     fontSize: 16,
-    textDecorationLine: "line-through",
-    color: "#9e9e9e",
+    fontWeight: "600",
   },
-  totalContainer: {
-    marginTop: 8,
+  totalLabel: {
+    color: "#E5E7EB",
+    fontSize: 14,
+    marginTop: 4,
   },
-  nightsText: {
-    fontSize: 16,
+  clearBtn: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderWidth: 1,
+    borderColor: "#FBBF24",
+    borderRadius: 6,
   },
-  totalText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#000",
+  clearText: {
+    color: "#FBBF24",
+    fontSize: 14,
+    fontWeight: "500",
   },
 });
-
-export default DateSelector;
