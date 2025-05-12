@@ -8,36 +8,62 @@ const initialState = {
   isAuthenticated: false,
   loading: true,
   error: null,
+  user: null,
 };
 
-// Reducer for handling auth actions
 const authReducer = (state, action) => {
   switch (action.type) {
     case "SESSION_VALIDATE_REQUEST":
       return { ...state, loading: true, error: null };
     case "SESSION_VALIDATE_SUCCESS":
-      return { ...state, isAuthenticated: true, loading: false, error: null };
+      return {
+        ...state,
+        isAuthenticated: true,
+        loading: false,
+        error: null,
+        user: action.payload, // ✅ Add this line
+      };
     case "SESSION_VALIDATE_FAILURE":
       return {
         ...state,
         isAuthenticated: false,
         loading: false,
         error: action.payload,
+        user: null,
       };
 
     case "LOGIN_REQUEST":
       return { ...state, loading: true, error: null };
     case "LOGIN_SUCCESS":
-      return { ...state, isAuthenticated: true, loading: false, error: null };
+      return {
+        ...state,
+        isAuthenticated: true,
+        loading: false,
+        error: null,
+        user: action.payload, // ✅ Add this line
+      };
     case "LOGIN_FAILURE":
       return {
         ...state,
         isAuthenticated: false,
         loading: false,
         error: action.payload,
+        user: null,
       };
     case "LOGOUT":
-      return { ...state, isAuthenticated: false, loading: false, error: null };
+      return {
+        ...state,
+        isAuthenticated: false,
+        loading: false,
+        error: null,
+        user: null, // ✅ Clear user on logout
+      };
+    case "UPDATE": {
+      return {
+        ...state,
+        user: action.payload,
+      };
+    }
 
     default:
       return state;
@@ -53,8 +79,12 @@ const AuthProvider = ({ children }) => {
     const checkSession = async () => {
       dispatch({ type: "SESSION_VALIDATE_REQUEST" });
       try {
-        await validateJWT(); // Validate the JWT session
-        dispatch({ type: "SESSION_VALIDATE_SUCCESS" });
+        const data = await validateJWT(); // should return user data
+
+        dispatch({
+          type: "SESSION_VALIDATE_SUCCESS",
+          payload: data.user, // ✅ Pass user to payload
+        });
       } catch (err) {
         dispatch({
           type: "SESSION_VALIDATE_FAILURE",

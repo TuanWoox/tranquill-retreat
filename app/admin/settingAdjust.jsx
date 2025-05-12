@@ -1,33 +1,33 @@
-import React from "react";
 import {
-  View,
   Text,
-  SafeAreaView,
+  TextInput,
+  View,
+  Button,
   ScrollView,
   ImageBackground,
   TouchableOpacity,
 } from "react-native";
+import { useGetSetting } from "@/hooks/useGetSetting";
+import Spinner from "@/components/Spinner";
+import UpdateSettingForm from "@/components/UpdateSettingForm";
 import { AntDesign } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
-import { useGetInformation } from "@/hooks/useGetInformation";
-import UpdateProfileForm from "@/components/UpdateProfileForm";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { router } from "expo-router";
 
-const UpdateProfileScreen = () => {
-  const { userInfo, isLoading } = useGetInformation();
-  const router = useRouter();
+function SettingAdjust() {
+  const { data, isLoading, error } = useGetSetting();
 
-  if (isLoading) {
+  if (isLoading)
     return (
-      <View className="flex-1 items-center justify-center bg-primary-200">
-        <Text className="text-lg text-white">Loading...</Text>
-      </View>
+      <Spinner>
+        <Text className="text-black">Fetching the setting...</Text>
+      </Spinner>
     );
-  }
 
   return (
     <View className="flex-1">
       <ImageBackground
-        source={require("../../../assets/images/aboutBackground.jpg")}
+        source={require("../../assets/images/aboutBackground.jpg")}
         className="flex-1"
         style={{ resizeMode: "cover" }}
       >
@@ -45,12 +45,12 @@ const UpdateProfileScreen = () => {
 
         <ScrollView className="flex-1">
           <View className="px-5 py-6">
-            {userInfo && <UpdateProfileForm guest={userInfo} />}
+            {data && <UpdateSettingForm setting={data} />}
           </View>
         </ScrollView>
       </ImageBackground>
     </View>
   );
-};
+}
 
-export default UpdateProfileScreen;
+export default SettingAdjust;

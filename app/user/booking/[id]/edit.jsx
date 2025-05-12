@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
   View,
   Text,
@@ -12,14 +12,21 @@ import {
 import { useLocalSearchParams } from "expo-router";
 import { useGetOneBooking } from "@/hooks/useGetOneBooking";
 import { useUpdateBooking } from "@/hooks/useUpdateBooking";
+import { Picker } from "@react-native-picker/picker";
 import { useForm, Controller } from "react-hook-form";
 import { useRouter } from "expo-router"; // Import router for navigation
 import { AntDesign } from "@expo/vector-icons";
+import Spinner from "@/components/Spinner";
 
 const EditBookingScreen = () => {
   const { id } = useLocalSearchParams();
-  const { data, isLoading, error } = useGetOneBooking(id);
+  const {
+    data: booking,
+    isGettingTheBooking,
+    error: bookingError,
+  } = useGetOneBooking(id);
   const { updateBookingFn, isUpdating, updateError } = useUpdateBooking();
+
   const {
     control,
     handleSubmit,
@@ -28,14 +35,21 @@ const EditBookingScreen = () => {
   } = useForm();
   const router = useRouter(); // Initialize the router
 
-  useEffect(() => {
-    if (data?.foundBooking) {
-      const booking = data.foundBooking;
-      setValue("numGuests", booking.numGuests);
-      setValue("hasBreakfast", booking.hasBreakfast);
-      setValue("bookingId", booking._id); // required for the update
-    }
-  }, [data, setValue]);
+  // Check if booking data is available before setting form values
+  if (booking && !errors.numGuests) {
+    setValue("numGuests", booking.numGuests);
+    setValue("hasBreakfast", booking.hasBreakfast);
+    setValue("bookingId", booking._id);
+  }
+
+  // Loading state
+  if (isGettingTheBooking) {
+    return (
+      <Spinner>
+        <Text className="text-black">Fetching The Cabin</Text>
+      </Spinner>
+    );
+  }
 
   const onSubmit = async (formData) => {
     try {
@@ -45,15 +59,8 @@ const EditBookingScreen = () => {
     }
   };
 
-  if (isLoading) {
-    return (
-      <View className="flex-1 items-center justify-center">
-        <Text>Loading booking details...</Text>
-      </View>
-    );
-  }
-
-  if (error || !data?.foundBooking) {
+  // Error handling if booking details couldn't be fetched
+  if (bookingError || !booking) {
     return (
       <View className="flex-1 items-center justify-center">
         <Text>Error loading booking</Text>
@@ -90,17 +97,37 @@ const EditBookingScreen = () => {
             name="numGuests"
             rules={{ required: true }}
             render={({ field: { onChange, value } }) => (
-              <TextInput
-                value={value?.toString()}
-                onChangeText={(val) => onChange(Number(val))}
-                keyboardType="numeric"
+              <View
                 style={{
-                  backgroundColor: "white",
-                  padding: 10,
-                  borderRadius: 5,
+                  backgroundColor: "#23272f", // dark background
+                  borderRadius: 8,
                   marginBottom: 16,
+                  borderWidth: 1,
+                  borderColor: "#d2af84", // gold border
+                  overflow: "hidden",
                 }}
-              />
+              >
+                <Picker
+                  selectedValue={value}
+                  onValueChange={(val) => onChange(val)}
+                  style={{
+                    color: "#fff", // white text
+                    backgroundColor: "transparent",
+                  }}
+                  dropdownIconColor="#d2af84" // gold icon (supported in @react-native-picker/picker)
+                >
+                  {[...Array(booking?.cabin?.maxCapacity || 10).keys()].map(
+                    (num) => (
+                      <Picker.Item
+                        key={num + 1}
+                        label={`${num + 1}`}
+                        value={num + 1}
+                        color="#fff" // white text for dropdown items
+                      />
+                    )
+                  )}
+                </Picker>
+              </View>
             )}
           />
           {errors.numGuests && (

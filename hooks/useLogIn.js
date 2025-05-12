@@ -17,9 +17,10 @@ export function useLogIn() {
       dispatch({ type: "LOGIN_REQUEST" });
     },
     onSuccess: async (data) => {
-      dispatch({ type: "LOGIN_SUCCESS" });
+      dispatch({ type: "LOGIN_SUCCESS", payload: data.user });
       const token = data.token; // make sure 'token' is from the response
       await AsyncStorage.setItem("jwt", token);
+
       router.replace("/(tabs)");
     },
     onError: (err) => {

@@ -21,7 +21,7 @@ export default function login() {
 
   const onSubmit = async (data) => {
     try {
-      await loginFn(data);
+      loginFn(data);
     } catch (error) {
       Alert.alert("Đăng nhập thất bại", error.message);
     }

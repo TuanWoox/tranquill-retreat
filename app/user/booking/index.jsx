@@ -13,7 +13,7 @@ import BookingList from "@/components/BookingList";
 
 const ReservationsScreen = () => {
   const router = useRouter();
-  const { data, isLoading, error } = useBookings();
+  const { data: bookings, isLoading, error } = useBookings();
 
   if (isLoading) {
     return (
@@ -49,7 +49,7 @@ const ReservationsScreen = () => {
         {/* Content Area */}
         <View className="flex-1 justify-center px-5 py-6 mt-20">
           {/* Conditional rendering of reservations or the no reservations message */}
-          {!data?.bookings || data.bookings.length === 0 ? (
+          {!bookings || bookings.length === 0 ? (
             <View className="flex-1">
               <View className="flex-1" />
               <View className="items-center">
@@ -65,7 +65,7 @@ const ReservationsScreen = () => {
               </View>
             </View>
           ) : (
-            <BookingList bookings={data.bookings} />
+            <BookingList bookings={bookings} />
           )}
         </View>
       </ImageBackground>

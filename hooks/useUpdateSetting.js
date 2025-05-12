@@ -1,24 +1,21 @@
 import { useMutation } from "@tanstack/react-query";
-import { updateProfile } from "../services/userService";
-import queryClient from "../config/reactQuery";
+import { updateSetting } from "../services/settingService";
 import Toast from "react-native-toast-message";
-import { useAuthContext } from "@/context/AuthContext";
-export const useUpdateProfile = function () {
-  const { dispatch } = useAuthContext();
+import queryClient from "@/config/reactQuery";
+export const useUpdateSetting = () => {
   const {
-    mutate: updateProfileFn,
+    mutate: updateSettingFn,
     isLoading,
     error,
   } = useMutation({
-    mutationFn: updateProfile,
+    mutationFn: updateSetting,
     onSuccess: (data) => {
-      queryClient.setQueryData(["userInfo"], data.updatedUser);
+      queryClient.setQueryData(["settings"], data);
       Toast.show({
         type: "success",
         text1: "Cập nhật",
         text2: "Cập nhật thành công",
       });
-      dispatch({ type: "UPDATE", payload: data.user });
     },
     onError: (err) => {
       Toast.show({
@@ -29,7 +26,7 @@ export const useUpdateProfile = function () {
     },
   });
   return {
-    updateProfileFn,
+    updateSettingFn,
     isLoading,
     error,
   };

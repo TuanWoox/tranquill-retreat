@@ -10,7 +10,10 @@ export const useDeleteCabin = function () {
   } = useMutation({
     mutationFn: deleteBooking,
     onSuccess: (data) => {
-      queryClient.invalidateQueries(["bookings"]);
+      queryClient.setQueryData(["bookings"], (oldValue) => {
+        if (!oldValue) return [];
+        return oldValue.filter((item) => item._id !== data._id);
+      });
       Toast.show({
         type: "success",
         text1: "Xóa",

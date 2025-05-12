@@ -4,7 +4,7 @@ import { useRouter } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
 import { useLogOut } from "@/hooks/useLogOut";
 import ButtonAuthTab from "./ButtonAuthTab";
-function AuthTabUser() {
+function AuthTabAdmin() {
   const router = useRouter();
   const logout = useLogOut();
   return (
@@ -13,8 +13,8 @@ function AuthTabUser() {
         <Ionicons name="person-circle" size={80} color="white" />
       </View>
       <View className="w-72 space-y-4">
-        <ButtonAuthTab handlePress={() => router.push("/user/booking")}>
-          Quản lí booking
+        <ButtonAuthTab handlePress={() => router.push("/admin/settingAdjust")}>
+          Thiết lập app
         </ButtonAuthTab>
         <ButtonAuthTab handlePress={() => router.push("/user/profile")}>
           Chỉnh sửa thông tin
@@ -25,4 +25,4 @@ function AuthTabUser() {
   );
 }
 
-export default AuthTabUser;
+export default AuthTabAdmin;
