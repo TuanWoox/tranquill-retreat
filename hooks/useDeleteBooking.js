@@ -1,16 +1,16 @@
 import { useMutation } from "@tanstack/react-query";
+import { deleteBooking } from "../services/bookingService";
 import queryClient from "../config/reactQuery";
-import { deleteCabin } from "../services/cabinService";
 import Toast from "react-native-toast-message";
-export const useDeleteCabin = function () {
+export const useDeleteBooking = function () {
   const {
-    mutate: deleteCabinFn,
+    mutate: deleteBookingFn,
     isLoading,
     error,
   } = useMutation({
-    mutationFn: deleteCabin,
+    mutationFn: deleteBooking,
     onSuccess: (data) => {
-      queryClient.setQueryData(["cabins"], (oldValue) => {
+      queryClient.setQueryData(["bookings"], (oldValue) => {
         if (!oldValue) return [];
         return oldValue.filter((item) => item._id !== data._id);
       });
@@ -29,7 +29,7 @@ export const useDeleteCabin = function () {
     },
   });
   return {
-    deleteCabinFn,
+    deleteBookingFn,
     isLoading,
     error,
   };

@@ -10,3 +10,16 @@ export const getAllCabins = async () => {
     throw { message: errMsg };
   }
 };
+export const deleteCabin = async (id) => {
+  try {
+    const reponse = await axiosAuth.delete(`${API_URL}/cabin/deleteCabin`, {
+      data: {
+        id,
+      },
+    });
+    return reponse.data;
+  } catch (err) {
+    const errMsg = err.reponse?.data?.message || "Không thể xóa cabin";
+    throw { message: errMsg };
+  }
+};

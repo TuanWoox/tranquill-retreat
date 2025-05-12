@@ -10,6 +10,7 @@ export default function Index() {
 
   const displayName =
     userInfo && userInfo.fullName ? userInfo.fullName : "Visitor";
+  const role = userInfo ? userInfo.role : "";
 
   return (
     <ImageBackground
@@ -43,7 +44,11 @@ export default function Index() {
               perfect escape awaits.
             </Text>
 
-            {isCabinsLoading ? <Spinner /> : <CabinList cabins={cabins} />}
+            {isCabinsLoading ? (
+              <Spinner />
+            ) : (
+              <CabinList cabins={cabins} role={role} />
+            )}
           </View>
         </ScrollView>
       </View>

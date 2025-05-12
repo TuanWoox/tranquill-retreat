@@ -1,10 +1,16 @@
 import { FlatList } from "react-native";
 import CabinCard from "./CabinCard";
-function CabinList({ cabins }) {
+import AdminCabinCard from "./AdminCabinCard"; // import AdminCabinCard
+
+function CabinList({ cabins, role }) {
+  const isAdmin = role === "admin";
+
   return (
     <FlatList
-      data={cabins.cabins}
-      renderItem={({ item }) => <CabinCard cabin={item} />}
+      data={cabins}
+      renderItem={({ item }) =>
+        isAdmin ? <AdminCabinCard cabin={item} /> : <CabinCard cabin={item} />
+      }
       keyExtractor={(item) => item._id}
       contentContainerStyle={{
         gap: 20,
