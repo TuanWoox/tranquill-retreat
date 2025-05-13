@@ -21,12 +21,9 @@ export const useCreateBooking = () => {
         id: user?._id, // Backend UserPrototype.clone expects id field
       };
 
-      console.log("Formatted booking data:", formattedData);
       return createBooking(formattedData);
     },
     onSuccess: (data) => {
-      console.log("Booking success response:", data);
-
       // Extract the proper booking data - the structure might be nested
       const bookingData = data.savedBooking || data;
 

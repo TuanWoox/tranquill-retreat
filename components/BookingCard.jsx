@@ -3,7 +3,7 @@ import { View, Text, Image, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import { format, formatDistance, isPast, isToday, parseISO } from "date-fns";
 import { AntDesign } from "@expo/vector-icons";
-import { useDeleteCabin } from "@/hooks/useDeleteCabin";
+import { useDeleteCabin } from "@/hooks/useDeleteBooking";
 
 const formatDistanceFromNow = (dateStr) =>
   formatDistance(parseISO(dateStr), new Date(), {
@@ -21,7 +21,7 @@ const BookingCard = ({ booking }) => {
     createdAt,
     cabin,
   } = booking;
-  const { deleteBookingFn, isLoading, error } = useDeleteCabin();
+  const { deleteBookingFn, isLoading, error } = useDeleteBooking();
   const router = useRouter();
 
   const isPastBooking = isPast(new Date(startDate));

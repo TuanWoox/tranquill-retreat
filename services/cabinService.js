@@ -10,3 +10,45 @@ export const getAllCabins = async () => {
     throw { message: errMsg };
   }
 };
+export const deleteCabin = async (id) => {
+  try {
+    const reponse = await axiosAuth.delete(`${API_URL}/cabin/deleteCabin`, {
+      data: {
+        id,
+      },
+    });
+    return reponse.data;
+  } catch (err) {
+    const errMsg = err.reponse?.data?.message || "Không thể xóa cabin";
+    throw { message: errMsg };
+  }
+};
+export const duplicateCabin = async (id) => {
+  try {
+    const reponse = await axiosAuth.post(`${API_URL}/cabin/duplicateCabin`, {
+      id,
+    });
+    return reponse.data;
+  } catch (err) {
+    const errMsg = err.reponse?.data?.message || "Không thể nhân bản cabin";
+    throw { message: errMsg };
+  }
+};
+export const createCabin = async (data) => {
+  try {
+    const config = {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    };
+    const reponse = await axiosAuth.post(
+      `${API_URL}/cabin/createCabin`,
+      data,
+      config
+    );
+    return reponse.data;
+  } catch (err) {
+    const errMsg = err.reponse?.data?.message || "Không thể tạo cabin";
+    throw { message: errMsg };
+  }
+};

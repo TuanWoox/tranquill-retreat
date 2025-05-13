@@ -4,7 +4,7 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import TextExpander from "@/components/TextExpander";
 
 const { width } = Dimensions.get("window");
-
+const IMAGE_URL = process.env.EXPO_PUBLIC_BACKEND_URL_IMAGE;
 function Cabin({ cabin }) {
   const { name, maxCapacity, regularPrice, discount, image, description } =
     cabin;
@@ -13,7 +13,16 @@ function Cabin({ cabin }) {
   return (
     <View style={styles.container}>
       <View style={styles.card}>
-        <Image source={{ uri: image }} style={styles.image} blurRadius={1} />
+        <Image
+          source={{
+            uri:
+              image && !image.includes(".co")
+                ? `${IMAGE_URL}/public/uploads/cabins/${image}`
+                : image || "fallback-image-url",
+          }}
+          style={styles.image}
+          blurRadius={1}
+        />
         <View style={styles.overlay} />
 
         <View style={styles.contentContainer}>

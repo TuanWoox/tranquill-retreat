@@ -1,35 +1,34 @@
 import { useMutation } from "@tanstack/react-query";
 import queryClient from "../config/reactQuery";
-import { deleteCabin } from "../services/cabinService";
+import { duplicateCabin } from "../services/cabinService";
 import Toast from "react-native-toast-message";
-export const useDeleteCabin = function () {
+export const useDuplicateCabin = () => {
   const {
-    mutate: deleteCabinFn,
+    mutate: duplicateCabinFn,
     isLoading,
     error,
   } = useMutation({
-    mutationFn: deleteCabin,
+    mutationFn: duplicateCabin,
     onSuccess: (data) => {
       queryClient.setQueryData(["cabins"], (oldValue) => {
-        if (!oldValue) return [];
-        return oldValue.filter((item) => item._id !== data._id);
+        return [...oldValue, data];
       });
       Toast.show({
         type: "success",
-        text1: "Xóa",
-        text2: "Xóa thành công",
+        text1: "Nhân bản",
+        text2: "Nhân bản thành công",
       });
     },
     onError: (err) => {
       Toast.show({
         type: "error",
-        text1: "Xóa",
-        text2: "Xóa thất bại",
+        text1: "Nhân bản",
+        text2: "Nhân bản thất bại",
       });
     },
   });
   return {
-    deleteCabinFn,
+    duplicateCabinFn,
     isLoading,
     error,
   };

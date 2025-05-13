@@ -1,16 +1,23 @@
 import React from "react";
 import { View, Text, TouchableOpacity, Image } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
+const IMAGE_URL = process.env.EXPO_PUBLIC_BACKEND_URL_IMAGE;
 import { Link } from "expo-router";
 
 const CabinCard = ({ cabin }) => {
   const { id, name, maxCapacity, regularPrice, discount, image } = cabin;
+
   return (
     <View className="flex-row bg-[#72716e] rounded-xl overflow-hidden border border-[#524d4d] my-4 shadow-lg">
       {/* Left: Image Section */}
       <View className="w-40 h-40">
         <Image
-          source={{ uri: image }}
+          source={{
+            uri:
+              image && !image.includes(".co")
+                ? `${IMAGE_URL}/public/uploads/cabins/${image}`
+                : image || "fallback-image-url",
+          }}
           className="w-full h-full rounded-xl"
           resizeMode="cover"
         />
