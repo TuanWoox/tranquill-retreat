@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, TouchableOpacity, Image } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
-
+const IMAGE_URL = process.env.EXPO_PUBLIC_BACKEND_URL_IMAGE;
 const CabinCard = ({ cabin }) => {
   const { id, name, maxCapacity, regularPrice, discount, image } = cabin;
 
@@ -10,7 +10,11 @@ const CabinCard = ({ cabin }) => {
       {/* Left: Image Section */}
       <View className="w-40 h-40">
         <Image
-          source={{ uri: image }}
+          source={{
+            uri: image
+              ? `${IMAGE_URL}/public/uploads/cabins/${image}`
+              : "fallback-image-url",
+          }}
           className="w-full h-full rounded-xl"
           resizeMode="cover"
         />

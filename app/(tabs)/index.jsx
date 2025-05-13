@@ -1,12 +1,21 @@
-import { ImageBackground, ScrollView, Text, View } from "react-native";
+import {
+  ImageBackground,
+  ScrollView,
+  Text,
+  View,
+  TouchableOpacity,
+} from "react-native";
+
 import { useCabins } from "../../hooks/useCabins";
 import Spinner from "@/components/Spinner";
 import CabinList from "@/components/CabinList";
 import { useAuthContext } from "@/context/AuthContext";
+import { useRouter } from "expo-router";
 
 export default function Index() {
-  const { cabins, isCabinsLoading, cabinsError } = useCabins();
+  const { cabins, isCabinsLoading } = useCabins();
   const { user: userInfo } = useAuthContext();
+  const router = useRouter();
 
   const displayName =
     userInfo && userInfo.fullName ? userInfo.fullName : "Visitor";
@@ -38,11 +47,22 @@ export default function Index() {
             <Text className="text-3xl text-[#d2af84] font-bold">
               Our Luxury Cabins
             </Text>
-            <Text className="text-lg text-slate-300 font-medium">
+            <Text className="text-lg text-slate-300 font-medium mb-2">
               Luxurious cabins in the Da Lat City. Enjoy stunning mountain
               views, explore forests, or relax in your private hot tub. Your
               perfect escape awaits.
             </Text>
+
+            {role === "admin" && (
+              <TouchableOpacity
+                onPress={() => {
+                  router.push("/cabins/create");
+                }}
+                className="bg-[#d2af84] px-4 py-2 rounded-xl w-fit self-start my-4"
+              >
+                <Text className="text-black font-bold">+ Create New Cabin</Text>
+              </TouchableOpacity>
+            )}
 
             {isCabinsLoading ? (
               <Spinner />

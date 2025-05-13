@@ -2,10 +2,17 @@ import React from "react";
 import { View, Text, TouchableOpacity, Image, Alert } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { useDeleteCabin } from "@/hooks/useDeleteCabin";
+import { useDuplicateCabin } from "@/hooks/useDuplicateCabin";
+const IMAGE_URL = process.env.EXPO_PUBLIC_BACKEND_URL_IMAGE;
 const AdminCabinCard = ({ cabin, onDelete, onEdit }) => {
   const { _id: id, name, maxCapacity, regularPrice, discount, image } = cabin;
 
   const { deleteCabinFn, isLoading, error } = useDeleteCabin();
+  const {
+    duplicateCabinFn,
+    isLoading: isDuplicating,
+    error: isDuplicateError,
+  } = useDuplicateCabin();
   const handleDelete = () => {
     Alert.alert("Xóa Cabin", `Bạn chắc chắn muốn xóa ${name}?`, [
       { text: "Cancel", style: "cancel" },
@@ -22,7 +29,11 @@ const AdminCabinCard = ({ cabin, onDelete, onEdit }) => {
       {/* Left: Image Section */}
       <View className="w-40 h-40">
         <Image
-          source={{ uri: image }}
+          source={{
+            uri: image
+              ? `${IMAGE_URL}/public/uploads/cabins/${image}`
+              : "fallback-image-url",
+          }}
           className="w-full h-full rounded-xl"
           resizeMode="cover"
         />
@@ -63,6 +74,16 @@ const AdminCabinCard = ({ cabin, onDelete, onEdit }) => {
             onPress={() => onEdit(cabin)}
           >
             <Text className="text-black font-medium">Sửa</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="bg-yellow-500 px-3 py-1 rounded-lg"
+            onPress={() => {
+              duplicateCabinFn(id);
+            }}
+          >
+            <Text className="text-black font-medium">
+              {isDuplicating ? "Đang nhân bản" : "Nhân bản"}
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             className="bg-red-500 px-3 py-1 rounded-lg"

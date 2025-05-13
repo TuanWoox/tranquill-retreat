@@ -32,6 +32,7 @@ export default function RootLayout() {
             name="admin/settingAdjust"
             options={{ headerShown: false }}
           />
+          <Stack.Screen name="cabins/create" options={{ headerShown: false }} />
         </Stack>
         <Toast />
       </QueryClientProvider>
