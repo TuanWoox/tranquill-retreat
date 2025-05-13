@@ -1,11 +1,11 @@
 import { useAuthContext } from "@/context/AuthContext";
 import { createBooking } from "@/services/bookingService";
 import { useMutation } from "@tanstack/react-query";
-import { Toast } from "react-native-toast-message";
-
+import Toast from "react-native-toast-message";
+import { useRouter } from "expo-router";
 export const useCreateBooking = () => {
   const { user } = useAuthContext();
-
+  const router = useRouter();
   const {
     mutate: createBookingFn,
     isLoading,

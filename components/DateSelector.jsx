@@ -1,16 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   View,
   Text,
   StyleSheet,
-  Dimensions,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { differenceInDays } from "date-fns";
 import { useGetBookedDates } from "@/hooks/useGetBookedDates";
-
-const { width } = Dimensions.get("window");
+import { Ionicons } from "@expo/vector-icons";
 
 export default function DateSelector({
   settings,
@@ -19,11 +18,22 @@ export default function DateSelector({
   onDateChange,
   onReset,
 }) {
-  const { bookedDates = [], isLoading } = useGetBookedDates(cabin?._id);
+  const {
+    data: bookedDates = [],
+    isLoading,
+    error,
+    isSuccess,
+  } = useGetBookedDates(cabin?._id);
+
+  useEffect(() => {
+    if (isSuccess) {
+      console.log("Updated booked dates:", bookedDates);
+    }
+  }, [bookedDates, isSuccess]);
+
   const { from, to } = dateRange;
-  // Compute number of nights & price
   const numNights = from && to ? differenceInDays(to, from) : 0;
-  const nightlyPrice = cabin.discount
+  const nightlyPrice = cabin?.discount
     ? cabin.regularPrice - cabin.discount
     : cabin.regularPrice;
   const totalPrice = numNights * nightlyPrice;
@@ -33,45 +43,49 @@ export default function DateSelector({
   if (from)
     marked[from.toISOString().split("T")[0]] = {
       startingDay: true,
-      color: "#10B981",
+      color: "#4f46e5",
+      textColor: "#FFFFFF",
     };
   if (to)
     marked[to.toISOString().split("T")[0]] = {
       endingDay: true,
-      color: "#10B981",
+      color: "#4f46e5",
+      textColor: "#FFFFFF",
     };
   if (from && to) {
-    // fill in between
     let cursor = new Date(from);
     while (cursor < to) {
       cursor = new Date(cursor.setDate(cursor.getDate() + 1));
       const d = cursor.toISOString().split("T")[0];
       if (d !== to.toISOString().split("T")[0]) {
-        marked[d] = { color: "#A7F3D0" };
+        marked[d] = { color: "#6366f1", textColor: "#FFFFFF" };
       }
     }
   }
 
-  // Disable past and booked dates - Use safe array access
+  // Disable booked dates
   const disabled = {};
-  // Use optional chaining to safely handle undefined bookedDates
-  bookedDates?.forEach((d) => {
-    if (d) {
-      // Add additional check for each date item
-      const key = new Date(d).toISOString().split("T")[0];
-      disabled[key] = { disabled: true, disableTouchEvent: true };
-    }
-  });
-  // Handler when user selects a day
+  if (isSuccess && bookedDates?.length > 0) {
+    bookedDates.forEach((d) => {
+      if (d) {
+        const key = new Date(d).toISOString().split("T")[0];
+        disabled[key] = {
+          disabled: true,
+          disableTouchEvent: true,
+          marked: true,
+          dotColor: "#EF4444",
+        };
+      }
+    });
+  }
+
   const onDayPress = (day) => {
     const selected = new Date(day.dateString);
-    // if no from, start new range
     if (!from || (from && to)) {
       onDateChange({ from: selected, to: null });
       return;
     }
 
-    // if selecting backwards, restart
     if (selected <= from) {
       onDateChange({ from: selected, to: null });
       return;
@@ -82,16 +96,24 @@ export default function DateSelector({
       length < settings.minBookingLength ||
       length > settings.maxBookingLength
     ) {
-      // ignore or you could flash a warning
       return;
     }
 
-    // finalize range
     onDateChange({ from, to: selected });
   };
 
   return (
     <View style={styles.wrapper}>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Select Your Dates</Text>
+        {isLoading && (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="small" color="#FDBB30" />
+            <Text style={styles.loadingText}>Loading availability...</Text>
+          </View>
+        )}
+      </View>
+
       <Calendar
         style={styles.calendar}
         current={new Date().toISOString().split("T")[0]}
@@ -100,37 +122,59 @@ export default function DateSelector({
         markingType={"period"}
         markedDates={{ ...marked, ...disabled }}
         theme={{
-          todayTextColor: "#FBBF24",
-          arrowColor: "#FBBF24",
-          monthTextColor: "#FBBF24",
-          dayTextColor: "#E5E7EB",
+          todayTextColor: "#FDBB30",
+          arrowColor: "#FDBB30",
+          monthTextColor: "#FFFFFF",
+          textDayFontSize: 16,
+          textMonthFontSize: 18,
+          textDayHeaderFontSize: 14,
+          textDayFontWeight: "400",
+          textMonthFontWeight: "600",
+          textDayHeaderFontWeight: "500",
+          dayTextColor: "#FFFFFF",
           calendarBackground: "#1E293B",
-          textDisabledColor: "#6B7280",
+          textDisabledColor: "#64748B",
+          textSectionTitleColor: "#94A3B8",
+          selectedDayBackgroundColor: "#FDBB30",
+          selectedDayTextColor: "#0F172A",
         }}
       />
+
+      <View style={styles.dateDisplay}>
+        <View style={styles.dateBox}>
+          <Text style={styles.dateLabel}>CHECK IN</Text>
+          <Text style={styles.dateValue}>
+            {from ? from.toLocaleDateString() : "Select date"}
+          </Text>
+        </View>
+        <View style={styles.dateSeparator} />
+        <View style={styles.dateBox}>
+          <Text style={styles.dateLabel}>CHECK OUT</Text>
+          <Text style={styles.dateValue}>
+            {to ? to.toLocaleDateString() : "Select date"}
+          </Text>
+        </View>
+      </View>
 
       <View style={styles.summary}>
         <View>
           <Text style={styles.priceLabel}>
-            {nightlyPrice.toLocaleString("en-US", {
-              style: "currency",
-              currency: "USD",
-            })}{" "}
-            / night
+            <Text style={styles.price}>${nightlyPrice.toLocaleString()}</Text>{" "}
+            <Text style={styles.perNight}>per night</Text>
           </Text>
           {numNights > 0 && (
             <Text style={styles.totalLabel}>
               {numNights} night{numNights !== 1 ? "s" : ""} ={" "}
-              {totalPrice.toLocaleString("en-US", {
-                style: "currency",
-                currency: "USD",
-              })}
+              <Text style={styles.totalPrice}>
+                ${totalPrice.toLocaleString()}
+              </Text>
             </Text>
           )}
         </View>
         {(from || to) && (
-          <TouchableOpacity style={styles.clearBtn} onPress={onReset}>
-            <Text style={styles.clearText}>Clear</Text>
+          <TouchableOpacity style={styles.resetBtn} onPress={onReset}>
+            <Ionicons name="refresh-outline" size={16} color="#FFFFFF" />
+            <Text style={styles.resetText}>Reset</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -141,43 +185,109 @@ export default function DateSelector({
 const styles = StyleSheet.create({
   wrapper: {
     marginVertical: 16,
-    borderRadius: 12,
+    borderRadius: 16,
     overflow: "hidden",
-    width: width - 32,
-    alignSelf: "center",
+    alignSelf: "stretch", // Changed from fixed width to stretch
     backgroundColor: "#1E293B",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 5,
   },
-  calendar: {
+  header: {
+    padding: 16,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     borderBottomWidth: 1,
     borderBottomColor: "#334155",
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: "600",
+    color: "#FFFFFF",
+  },
+  loadingContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  loadingText: {
+    marginLeft: 8,
+    fontSize: 14,
+    color: "#94A3B8",
+  },
+  calendar: {
+    paddingBottom: 8,
+    backgroundColor: "#1E293B",
+  },
+  dateDisplay: {
+    flexDirection: "row",
+    padding: 16,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: "#334155",
+  },
+  dateBox: {
+    flex: 1,
+    alignItems: "center",
+  },
+  dateLabel: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#94A3B8",
+    marginBottom: 4,
+  },
+  dateValue: {
+    fontSize: 16,
+    fontWeight: "500",
+    color: "#FFFFFF",
+  },
+  dateSeparator: {
+    width: 1,
+    backgroundColor: "#334155",
+    marginHorizontal: 8,
   },
   summary: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     padding: 16,
-    backgroundColor: "#334155",
   },
   priceLabel: {
-    color: "#FBBF24",
+    flexDirection: "row",
+    alignItems: "baseline",
+  },
+  price: {
+    color: "#FDBB30",
+    fontSize: 22,
+    fontWeight: "700",
+  },
+  perNight: {
+    color: "#94A3B8",
     fontSize: 16,
-    fontWeight: "600",
   },
   totalLabel: {
-    color: "#E5E7EB",
-    fontSize: 14,
-    marginTop: 4,
+    color: "#FFFFFF",
+    fontSize: 15,
+    marginTop: 6,
   },
-  clearBtn: {
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderWidth: 1,
-    borderColor: "#FBBF24",
-    borderRadius: 6,
+  totalPrice: {
+    color: "#FDBB30",
+    fontWeight: "600",
   },
-  clearText: {
-    color: "#FBBF24",
+  resetBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "rgba(253, 187, 48, 0.2)",
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+  },
+  resetText: {
+    color: "#FFFFFF",
+    fontWeight: "600",
     fontSize: 14,
-    fontWeight: "500",
+    marginLeft: 4,
   },
 });

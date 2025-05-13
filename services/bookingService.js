@@ -62,13 +62,13 @@ export const createBooking = async (data) => {
 };
 
 export const getBookedDates = async (data) => {
-  // Extract cabinId correctly from the query key
   const cabinId = data.queryKey[1].cabinId;
+  console.log("cabinId", cabinId);
   try {
-    // Use path parameter format /:cabinId instead of query parameter
     const response = await axiosAuth.get(
       `${API_URL}/booking/getBookedDates/${cabinId}`
     );
+    console.log("response", response.data);
     return response.data;
   } catch (error) {
     const errMsg = error.response?.data?.message || "Không thể lấy lịch đã đặt";
