@@ -122,7 +122,7 @@ const EditBookingScreen = () => {
                         key={num + 1}
                         label={`${num + 1}`}
                         value={num + 1}
-                        color="#fff" // white text for dropdown items
+                        color="#000" // white text for dropdown items
                       />
                     )
                   )}

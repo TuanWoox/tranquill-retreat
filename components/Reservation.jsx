@@ -212,7 +212,7 @@ export default function Reservation({ cabin, settings }) {
                     key={num}
                     label={`${num} ${num === 1 ? "guest" : "guests"}`}
                     value={num}
-                    color="#E5E7EB"
+                    color="#000000"
                   />
                 ))}
               </Picker>

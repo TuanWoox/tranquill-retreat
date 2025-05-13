@@ -3,8 +3,8 @@ import { View, Text, Image, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import { format, formatDistance, isPast, isToday, parseISO } from "date-fns";
 import { AntDesign } from "@expo/vector-icons";
-import { useDeleteCabin } from "@/hooks/useDeleteBooking";
-
+import { useDeleteBooking } from "@/hooks/useDeleteBooking";
+const IMAGE_URL = process.env.EXPO_PUBLIC_BACKEND_URL_IMAGE;
 const formatDistanceFromNow = (dateStr) =>
   formatDistance(parseISO(dateStr), new Date(), {
     addSuffix: true,
@@ -33,7 +33,12 @@ const BookingCard = ({ booking }) => {
       <View className="flex-row">
         {/* Image */}
         <Image
-          source={{ uri: cabin.image }}
+          source={{
+            uri:
+              cabin.image && !cabin.image.includes(".co")
+                ? `${IMAGE_URL}/${cabin.image}`
+                : cabin.image || "fallback-image-url",
+          }}
           className="w-28 h-full rounded-l-xl"
           resizeMode="cover"
         />

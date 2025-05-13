@@ -17,7 +17,7 @@ function Cabin({ cabin }) {
           source={{
             uri:
               image && !image.includes(".co")
-                ? `${IMAGE_URL}/public/uploads/cabins/${image}`
+                ? `${IMAGE_URL}/${image}`
                 : image || "fallback-image-url",
           }}
           style={styles.image}

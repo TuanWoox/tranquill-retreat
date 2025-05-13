@@ -32,7 +32,7 @@ const AdminCabinCard = ({ cabin, onDelete, onEdit }) => {
           source={{
             uri:
               image && !image.includes(".co")
-                ? `${IMAGE_URL}/public/uploads/cabins/${image}`
+                ? `${IMAGE_URL}/${image}`
                 : image || "fallback-image-url",
           }}
           className="w-full h-full rounded-xl"
