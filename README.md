@@ -1,50 +1,84 @@
-# Welcome to your Expo app 👋
+# Tranquill Retreat 🏡
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A mobile application for booking luxury cabins. Experience stunning mountain views, explore forests, or relax in your private retreat.
 
-## Get started
+![Tranquill Retreat Banner](./assets/images/aboutBackground.jpg)
 
-1. Install dependencies
+## 📱 Features
+
+- **User Authentication**: Secure login and signup functionality
+- **Cabin Browsing**: View available cabins with detailed information
+- **Cabin Reservations**: Book cabins with customizable options
+  - Date selection
+  - Guest count management
+  - Breakfast inclusion options
+  - Special requests
+- **Booking Management**: View, edit, and cancel your bookings
+- **User Profile**: Manage your personal information
+- **Admin Dashboard**: Special features for administrators
+  - Cabin management (create, edit, delete)
+  - Settings adjustments
+  - Duplication of cabins
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) (16.x or higher)
+- [Expo CLI](https://docs.expo.dev/get-started/installation/)
+- iOS Simulator or Android Emulator (optional)
+- Expo Go app for physical device testing
+
+### Installation
+
+1. Clone the repository:
+
+   ```bash
+   git clone <repository-url>
+   cd tranquill-retreat
+   ```
+
+2. Install dependencies:
 
    ```bash
    npm install
    ```
 
-2. Start the app
+3. Set up environment variables:
+   Create a `.env` file in the root directory with the following variables:
 
-   ```bash
-    npx expo start
+   ```
+   EXPO_PUBLIC_BACKEND_URL=<your-api-url>
+   EXPO_PUBLIC_BACKEND_URL_IMAGE=<your-image-api-url>
    ```
 
-In the output, you'll find options to open the app in a
+4. Start the development server:
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+   ```bash
+   npx expo start
+   ```
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+5. Use the Expo Go app to scan the QR code, or press:
+   - `a` to open in Android emulator
+   - `i` to open in iOS simulator
 
-## Get a fresh project
+## 💻 Technology Stack
 
-When you're ready, run:
+- **Frontend**: React Native, Expo
+- **State Management**: React Query, Context API
+- **Styling**: TailwindCSS (via NativeWind)
+- **Navigation**: Expo Router
+- **Forms**: React Hook Form
+- **UI Components**: Custom components, Expo Vector Icons
 
-```bash
-npm run reset-project
-```
+## 🔧 Available Scripts
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+- `npx expo start` - Start the development server
+- `npm run android` - Run on Android emulator
+- `npm run ios` - Run on iOS simulator
+- `npm run web` - Run as web application (experimental)
 
-## Learn more
+## 👥 Contributors
 
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- [Bạch Đức Cảnh](https://github.com/BachCanh) - Developer
+- [Nguyễn Tuấn Vũ](https://github.com/TuanWoox) - Developer
