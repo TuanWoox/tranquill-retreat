@@ -8,15 +8,18 @@ import {
   ImageBackground,
   SafeAreaView,
   TouchableOpacity,
+  Platform,
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { useGetOneBooking } from "@/hooks/useGetOneBooking";
 import { useUpdateBooking } from "@/hooks/useUpdateBooking";
 import { Picker } from "@react-native-picker/picker";
 import { useForm, Controller } from "react-hook-form";
-import { useRouter } from "expo-router"; // Import router for navigation
-import { AntDesign } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import ModalSelector from "react-native-modal-selector";
+import { AntDesign, Feather } from "@expo/vector-icons";
 import Spinner from "@/components/Spinner";
+import { useGetSetting } from "@/hooks/useGetSetting";
 
 const EditBookingScreen = () => {
   const { id } = useLocalSearchParams();
@@ -26,32 +29,38 @@ const EditBookingScreen = () => {
     error: bookingError,
   } = useGetOneBooking(id);
   const { updateBookingFn, isUpdating, updateError } = useUpdateBooking();
-
+  const { data: settings, isLoading, error } = useGetSetting();
   const {
     control,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors },
   } = useForm();
-  const router = useRouter(); // Initialize the router
+  const router = useRouter();
 
-  // Check if booking data is available before setting form values
   if (booking && !errors.numGuests) {
     setValue("numGuests", booking.numGuests);
     setValue("hasBreakfast", booking.hasBreakfast);
+    setValue("observations", booking.observations || "");
     setValue("bookingId", booking._id);
   }
 
-  // Loading state
   if (isGettingTheBooking) {
     return (
       <Spinner>
-        <Text className="text-black">Fetching The Cabin</Text>
+        <Text className="text-black">Fetching The Booking</Text>
       </Spinner>
     );
   }
 
   const onSubmit = async (formData) => {
+    const extrasPrice =
+      formData.hasBreakfast === false
+        ? 0
+        : formData.numGuests * settings.breakfastPrice;
+    formData.extrasPrice = extrasPrice;
+
     try {
       updateBookingFn(formData);
     } catch (err) {
@@ -59,11 +68,12 @@ const EditBookingScreen = () => {
     }
   };
 
-  // Error handling if booking details couldn't be fetched
   if (bookingError || !booking) {
     return (
       <View className="flex-1 items-center justify-center">
-        <Text>Error loading booking</Text>
+        <Text className="text-white text-lg font-semibold">
+          Error loading booking.
+        </Text>
       </View>
     );
   }
@@ -71,100 +81,226 @@ const EditBookingScreen = () => {
   return (
     <View className="flex-1">
       <ImageBackground
-        source={require("../../../../assets/images/aboutBackground.jpg")} // Add your background image here
+        source={require("../../../../assets/images/aboutBackground.jpg")}
         className="flex-1"
         style={{ resizeMode: "cover" }}
       >
-        <SafeAreaView className="absolute inset-0 bg-black opacity-40" />
-        {/* Optional overlay for better text visibility */}
-        <ScrollView contentContainerStyle={{ padding: 16, marginTop: 50 }}>
+        {/* Dark overlay */}
+        <SafeAreaView className="absolute inset-0 bg-black opacity-60" />
+
+        <ScrollView contentContainerStyle={{ padding: 16, paddingTop: 80 }}>
           {/* Back Button */}
           <TouchableOpacity
             onPress={() => router.back()}
-            className="bg-white/80 p-2 rounded-full max-w-10"
+            className="absolute top-10 left-4 bg-white/90 p-2 rounded-full shadow-md z-10"
           >
-            <AntDesign name="arrowleft" size={20} color="black" />
+            <AntDesign name="arrowleft" size={22} color="black" />
           </TouchableOpacity>
 
-          <Text className="text-2xl font-bold mb-6 text-white">
-            Edit Booking
-          </Text>
+          {/* Form Container */}
+          <View className="bg-white/10 border border-white/20 p-6 rounded-2xl shadow-md">
+            <Text className="text-3xl font-bold text-[#d2af84] mb-6 text-center">
+              Edit Booking
+            </Text>
 
-          {/* Number of Guests */}
-          <Text className="text-lg mb-2 text-white">Guests</Text>
-          <Controller
-            control={control}
-            name="numGuests"
-            rules={{ required: true }}
-            render={({ field: { onChange, value } }) => (
-              <View
-                style={{
-                  backgroundColor: "#23272f", // dark background
-                  borderRadius: 8,
-                  marginBottom: 16,
-                  borderWidth: 1,
-                  borderColor: "#d2af84", // gold border
-                  overflow: "hidden",
-                }}
-              >
-                <Picker
-                  selectedValue={value}
-                  onValueChange={(val) => onChange(val)}
-                  style={{
-                    color: "#fff", // white text
-                    backgroundColor: "transparent",
-                  }}
-                  dropdownIconColor="#d2af84" // gold icon (supported in @react-native-picker/picker)
-                >
-                  {[...Array(booking?.cabin?.maxCapacity || 10).keys()].map(
-                    (num) => (
-                      <Picker.Item
-                        key={num + 1}
-                        label={`${num + 1}`}
-                        value={num + 1}
-                        color="#000" // white text for dropdown items
-                      />
-                    )
-                  )}
-                </Picker>
-              </View>
+            {/* Guests Picker */}
+            <Text className="text-white text-base mb-2">Number of Guests</Text>
+            <Controller
+              control={control}
+              name="numGuests"
+              rules={{ required: true }}
+              render={({ field: { onChange, value } }) => {
+                const options = [
+                  ...Array(booking?.cabin?.maxCapacity || 10).keys(),
+                ].map((i) => ({
+                  key: i + 1,
+                  label: `${i + 1}`,
+                }));
+
+                return (
+                  <View style={{ marginBottom: 16 }}>
+                    <ModalSelector
+                      data={options}
+                      initValue={
+                        value ? `Guests: ${value}` : "Select number of guests"
+                      }
+                      onChange={(option) => onChange(option.key)}
+                      style={{
+                        backgroundColor: "#2c2f38",
+                        borderRadius: 12,
+                        borderWidth: 1,
+                        borderColor: "#d2af84",
+                        paddingVertical: 14,
+                        paddingHorizontal: 16,
+                        shadowColor: "#000",
+                        shadowOffset: { width: 0, height: 3 },
+                        shadowOpacity: 0.25,
+                        shadowRadius: 6,
+                        elevation: 5,
+                      }}
+                      initValueTextStyle={{
+                        color: value ? "#d2af84" : "#aaa",
+                        fontSize: 18,
+                        fontWeight: "600",
+                        fontFamily: "System",
+                      }}
+                      selectTextStyle={{
+                        color: "#fff",
+                        fontSize: 18,
+                        fontWeight: "600",
+                        fontFamily: "System",
+                      }}
+                      optionTextStyle={{
+                        color: "#222",
+                        fontSize: 16,
+                        paddingVertical: 10,
+                      }}
+                      cancelText="Cancel"
+                      cancelTextStyle={{
+                        color: "#d2af84",
+                        fontWeight: "600",
+                        fontSize: 16,
+                      }}
+                      optionContainerStyle={{
+                        borderRadius: 12,
+                        backgroundColor: "#fefefe",
+                        marginHorizontal: 10,
+                        marginVertical: 8,
+                        paddingVertical: 8,
+                        shadowColor: "#000",
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: 0.1,
+                        shadowRadius: 5,
+                        elevation: 3,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          color: value ? "#d2af84" : "#888",
+                          fontSize: 18,
+                        }}
+                      >
+                        {value ? `Guests: ${value}` : "Select number of guests"}
+                      </Text>
+                    </ModalSelector>
+                  </View>
+                );
+              }}
+            />
+
+            {errors.numGuests && (
+              <Text className="text-red-400 mb-4">This field is required.</Text>
             )}
-          />
-          {errors.numGuests && (
-            <Text className="text-red-500">This field is required.</Text>
-          )}
 
-          {/* Breakfast Toggle */}
-          <Text className="text-lg mb-2 text-white">Include Breakfast</Text>
-          <Controller
-            control={control}
-            name="hasBreakfast"
-            render={({ field: { onChange, value } }) => (
-              <Switch value={value} onValueChange={onChange} />
-            )}
-          />
-
-          {/* Reservation ID (hidden) */}
-          <Controller
-            control={control}
-            name="bookingId"
-            render={({ field: { value } }) => (
-              <TextInput
-                value={value}
-                editable={false}
-                style={{ display: "none" }}
+            {/* Breakfast Switch */}
+            <View className="flex-row justify-between items-center mb-6">
+              <Text className="text-white text-base">Include Breakfast</Text>
+              <Controller
+                control={control}
+                name="hasBreakfast"
+                render={({ field: { onChange, value } }) => (
+                  <Switch
+                    value={value}
+                    onValueChange={onChange}
+                    trackColor={{ false: "#767577", true: "#d2af84" }}
+                    thumbColor={value ? "#fff" : "#f4f3f4"}
+                  />
+                )}
               />
-            )}
-          />
+            </View>
 
-          <View className="mt-6 flex justify-center items-center">
-            {/* Custom Update Booking Button */}
+            {/* Special Requests Section */}
+            <View className="mb-6">
+              <View className="flex-row items-center mb-3">
+                <Feather name="message-square" size={18} color="#d2af84" />
+                <Text className="text-white text-base ml-2 font-semibold">
+                  Special Requests
+                </Text>
+              </View>
+              <Text className="text-gray-300 text-sm mb-3">
+                Let us know about any special requirements or requests for your
+                stay
+              </Text>
+
+              <Controller
+                control={control}
+                name="observations"
+                render={({ field: { onChange, value } }) => (
+                  <TextInput
+                    value={value}
+                    onChangeText={onChange}
+                    placeholder="Enter your special requests here..."
+                    placeholderTextColor="#888"
+                    multiline={true}
+                    numberOfLines={4}
+                    textAlignVertical="top"
+                    style={{
+                      backgroundColor: "#2c2f38",
+                      borderRadius: 12,
+                      borderWidth: 1,
+                      borderColor: "#d2af84",
+                      paddingVertical: 12,
+                      paddingHorizontal: 16,
+                      color: "#fff",
+                      fontSize: 16,
+                      minHeight: 100,
+                      maxHeight: 150,
+                      shadowColor: "#000",
+                      shadowOffset: { width: 0, height: 2 },
+                      shadowOpacity: 0.15,
+                      shadowRadius: 4,
+                      elevation: 3,
+                    }}
+                  />
+                )}
+              />
+
+              {/* Character count or helpful text */}
+              <Text className="text-gray-400 text-xs mt-2">
+                Examples: Early check-in, late check-out, dietary restrictions,
+                celebration arrangements, etc.
+              </Text>
+            </View>
+
+            {/* Booking ID (Hidden) */}
+            <Controller
+              control={control}
+              name="bookingId"
+              render={({ field: { value } }) => (
+                <TextInput
+                  value={value}
+                  editable={false}
+                  style={{ display: "none" }}
+                />
+              )}
+            />
+
+            {/* Submit Button */}
             <TouchableOpacity
               onPress={handleSubmit(onSubmit)}
-              className="w-30 bg-[#d2af84] px-4 py-3 rounded-md mt-3"
+              disabled={isUpdating}
+              className="bg-[#d2af84] py-3 rounded-xl shadow-md mt-4"
+              style={{
+                shadowColor: "#d2af84",
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.3,
+                shadowRadius: 6,
+                elevation: 8,
+              }}
             >
-              <Text className="text-white text-lg">Update Booking</Text>
+              <Text className="text-center text-lg text-white font-bold">
+                {isUpdating ? "Updating..." : "Update Booking"}
+              </Text>
             </TouchableOpacity>
+
+            {/* Error Message */}
+            {updateError && (
+              <View className="mt-4 p-3 rounded-lg bg-red-500/20 border border-red-500/30">
+                <Text className="text-red-300 text-center">
+                  Failed to update booking. Please try again.
+                </Text>
+              </View>
+            )}
           </View>
         </ScrollView>
       </ImageBackground>

@@ -37,14 +37,14 @@ const ReservationsScreen = () => {
         <View className="absolute inset-0 bg-black opacity-40" />
 
         {/* Back Button */}
-        <SafeAreaView className="absolute top-2 left-2 z-20">
+        {/* <SafeAreaView className="absolute top-2 left-2 z-20">
           <TouchableOpacity
             onPress={() => router.back()}
             className="bg-white/80 p-2 rounded-full max-w-10"
           >
             <AntDesign name="arrowleft" size={20} color="black" />
           </TouchableOpacity>
-        </SafeAreaView>
+        </SafeAreaView> */}
 
         {/* Content Area */}
         <View className="flex-1 justify-center px-5 py-6 mt-20">

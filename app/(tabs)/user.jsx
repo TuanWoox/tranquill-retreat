@@ -3,6 +3,7 @@ import NotAuthTabUser from "@/components/NotAuthTabUser";
 import AuthTabUser from "@/components/AuthTabUser";
 import { useAuthContext } from "@/context/AuthContext";
 import AuthTabAdmin from "@/components/AuthTabAdmin";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function User() {
   const { isAuthenticated, user } = useAuthContext();
@@ -26,7 +27,7 @@ export default function User() {
       source={require("../../assets/images/aboutBackground.jpg")}
       className="flex-1"
     >
-      <View className="absolute inset-0 bg-[rgb(20,28,36)] opacity-40" />
+      <SafeAreaView className="absolute inset-0 bg-black opacity-20" />
       {Content}
     </ImageBackground>
   );

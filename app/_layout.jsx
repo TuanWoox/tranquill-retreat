@@ -29,6 +29,10 @@ export default function RootLayout() {
             options={{ headerShown: false }}
           />
           <Stack.Screen
+            name="user/booking/[id]/index"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
             name="admin/settingAdjust"
             options={{ headerShown: false }}
           />

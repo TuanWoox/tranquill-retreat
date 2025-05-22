@@ -4,6 +4,8 @@ import { useLocalSearchParams } from "expo-router";
 import Cabin from "@/components/Cabin";
 import Reservation from "@/components/Reservation";
 import CabinSpinner from "@/components/CabinSpinner";
+import { useGetSetting } from "@/hooks/useGetSetting";
+import Spinner from "@/components/Spinner";
 
 export default function CabinDetailPage() {
   const { cabinData, cabinId } = useLocalSearchParams();
@@ -35,12 +37,8 @@ export default function CabinDetailPage() {
   }
 
   // Mock settings for UI demonstration
-  const settings = {
-    minBookingLength: 1,
-    maxBookingLength: 30,
-    maxNumberOfGuests: cabin.maxCapacity,
-    breakfastPrice: 15,
-  };
+
+  const { data: settings, isLoading, error } = useGetSetting();
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -50,9 +48,12 @@ export default function CabinDetailPage() {
       <Text style={styles.header}>
         Reserve {cabin?.name || "this cabin"} today. Pay on arrival.
       </Text>
-
       {/* Render reservation component with settings */}
-      <Reservation cabin={cabin} settings={settings} />
+      {isLoading ? (
+        <Spinner />
+      ) : (
+        <Reservation cabin={cabin} settings={settings} />
+      )}
     </ScrollView>
   );
 }

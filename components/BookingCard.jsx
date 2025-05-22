@@ -1,37 +1,68 @@
 import React from "react";
-import { View, Text, Image, TouchableOpacity } from "react-native";
+import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
-import { format, formatDistance, isPast, isToday, parseISO } from "date-fns";
-import { AntDesign } from "@expo/vector-icons";
-import { useDeleteBooking } from "@/hooks/useDeleteBooking";
+import { format, formatDistance, isToday, parseISO } from "date-fns";
+import {
+  AntDesign,
+  FontAwesome,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
 const IMAGE_URL = process.env.EXPO_PUBLIC_BACKEND_URL_IMAGE;
+
 const formatDistanceFromNow = (dateStr) =>
   formatDistance(parseISO(dateStr), new Date(), {
     addSuffix: true,
   }).replace("about ", "");
+
+const CARD_HEIGHT = 150;
+
+const statusMap = {
+  Upcoming: { color: "#22c55e", icon: "calendar-check" },
+  "In Progress": { color: "#3b82f6", icon: "progress-clock" },
+  Past: { color: "#eab308", icon: "history" },
+};
 
 const BookingCard = ({ booking }) => {
   const {
     _id,
     startDate,
     endDate,
-    numNights,
+    numDates,
     totalPrice,
     numGuests,
     createdAt,
     cabin,
   } = booking;
-  const { deleteBookingFn, isLoading, error } = useDeleteBooking();
   const router = useRouter();
 
-  const isPastBooking = isPast(new Date(startDate));
-  const bookingStatus = isPastBooking ? "Past" : "Upcoming";
-  const badgeColor = isPastBooking ? "bg-yellow-700" : "bg-green-700";
+  // Status logic
+  const now = new Date();
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  let bookingStatus = "";
+  if (now < start) {
+    bookingStatus = "Upcoming";
+  } else if (now > end) {
+    bookingStatus = "Past";
+  } else {
+    bookingStatus = "In Progress";
+  }
+  const { color: badgeColor, icon: badgeIcon } = statusMap[bookingStatus];
 
   return (
-    <View className="bg-gray-900 rounded-xl shadow-md border border-gray-700 mb-5">
-      <View className="flex-row">
-        {/* Image */}
+    <TouchableOpacity
+      activeOpacity={0.88}
+      onPress={() => router.push(`/user/booking/${_id}`)}
+      className="rounded-2xl shadow-xl border border-[#d2af84] mb-6 overflow-hidden flex-row"
+      style={{
+        backgroundColor: "#23272f",
+        height: CARD_HEIGHT,
+        elevation: 6,
+      }}
+    >
+      {/* Image */}
+      <View style={{ width: 110, height: "100%", position: "relative" }}>
         <Image
           source={{
             uri:
@@ -39,81 +70,98 @@ const BookingCard = ({ booking }) => {
                 ? `${IMAGE_URL}/${cabin.image}`
                 : cabin.image || "fallback-image-url",
           }}
-          className="w-28 h-full rounded-l-xl"
+          style={{
+            width: 110,
+            height: "100%",
+            borderTopLeftRadius: 16,
+            borderBottomLeftRadius: 16,
+          }}
           resizeMode="cover"
         />
-
-        {/* Info Section */}
-        <View className="flex-1 p-3">
-          <View className="flex-row justify-end items-start">
-            <View className={`px-2 py-1 rounded ${badgeColor}`}>
-              <Text className="text-xs font-bold uppercase text-white">
-                {bookingStatus}
-              </Text>
-            </View>
-          </View>
-          <Text className="text-base font-bold text-white flex-1 mr-2">
-            {numNights} nights in {cabin.name}
-          </Text>
-
-          {/* Dates */}
-          <View className="mt-2">
-            <Text className="text-sm text-gray-300">
-              {format(new Date(startDate), "MMM dd")}
-              {isToday(new Date(startDate))
-                ? " (Today)"
-                : ` (${formatDistanceFromNow(startDate)})`}
-            </Text>
-            <Text className="text-sm text-gray-300">
-              to {format(new Date(endDate), "MMM dd yyyy")}
-            </Text>
-          </View>
-
-          {/* Price and Guests */}
-          <View className="flex-row items-center mt-2">
-            <Text className="text-base font-semibold text-white">
-              ${totalPrice}
-            </Text>
-            <Text className="mx-2 text-gray-400">&bull;</Text>
-            <Text className="text-sm text-gray-300">
-              {numGuests} guest{numGuests > 1 ? "s" : ""}
-            </Text>
-          </View>
-
-          {/* Booking Time */}
-          <Text className="text-xs text-gray-500 mt-2">
-            Booked on {format(new Date(createdAt), "MMM dd")}
-          </Text>
-        </View>
-
-        {/* Action Buttons */}
-        <View className="justify-between items-center bg-gray-800 px-2 py-3 rounded-r-xl border-l border-gray-700">
-          {!isPastBooking && (
-            <TouchableOpacity
-              onPress={() => router.push(`/user/booking/${_id}/edit`)}
-              className="items-center"
-            >
-              <AntDesign name="edit" size={18} color="#f5f5f5" />
-              <Text className="text-xs font-semibold text-gray-200 mt-1">
-                Edit
-              </Text>
-            </TouchableOpacity>
-          )}
-
-          <TouchableOpacity
-            onPress={() => {
-              deleteBookingFn({ _id });
-            }}
-            className="items-center mt-4"
+        {/* Overlay for readability */}
+        <View style={StyleSheet.absoluteFill} className="bg-black/10" />
+        {/* Cabin name overlay */}
+        <View className="absolute bottom-0 left-0 right-0 bg-[#23272f]/90 px-2 py-1 flex-row items-center rounded-bl-2xl">
+          <MaterialCommunityIcons
+            name="home-variant"
+            size={14}
+            color="#d2af84"
+          />
+          <Text
+            numberOfLines={1}
+            className="text-[#d2af84] font-bold text-xs ml-1"
+            style={{ maxWidth: 90 }}
           >
-            <AntDesign name="delete" size={18} color="red" />
-            <Text className="text-xs font-semibold text-red-500 mt-1">
-              {isLoading ? "Đang xóa" : "Xóa"}
-            </Text>
-          </TouchableOpacity>
+            {cabin.name}
+          </Text>
         </View>
       </View>
-    </View>
+
+      {/* Info Section */}
+      <View className="flex-1 py-3 px-4 justify-between min-w-0">
+        {/* Top Row: Nights & Status */}
+        <View className="flex-row items-center justify-between mb-1">
+          <Text
+            className="text-lg font-bold text-[#d2af84] flex-1"
+            numberOfLines={1}
+          >
+            <MaterialCommunityIcons
+              name="moon-waning-crescent"
+              size={16}
+              color="#d2af84"
+            />{" "}
+            {numDates} date{numDates > 1 ? "s" : ""}
+          </Text>
+          <View
+            className="px-3 py-1 rounded-full flex-row items-center ml-2"
+            style={{ backgroundColor: badgeColor }}
+          >
+            <MaterialCommunityIcons name={badgeIcon} size={14} color="#fff" />
+            <Text className="text-xs font-bold uppercase text-white ml-1">
+              {bookingStatus}
+            </Text>
+          </View>
+        </View>
+
+        {/* Dates */}
+        <View className="flex-row items-center mt-1 flex-1 min-w-0">
+          <AntDesign name="calendar" size={16} color="#d2af84" />
+          <Text
+            className="text-sm text-gray-200 ml-2 flex-shrink"
+            numberOfLines={2}
+            style={{
+              flexShrink: 1,
+              flexWrap: "wrap",
+            }}
+          >
+            {format(new Date(startDate), "MMM dd")}
+            {isToday(new Date(startDate))
+              ? " (Today)"
+              : ` (${formatDistanceFromNow(startDate)})`}
+            {"  "}→ {format(new Date(endDate), "MMM dd yyyy")}
+          </Text>
+        </View>
+
+        {/* Price and Guests */}
+        <View className="flex-row items-center mt-2">
+          <FontAwesome name="user" size={15} color="#d2af84" />
+          <Text className="ml-2 text-gray-200">
+            {numGuests} guest{numGuests > 1 ? "s" : ""}
+          </Text>
+          <Text className="mx-2 text-gray-400">|</Text>
+          <AntDesign name="creditcard" size={15} color="#d2af84" />
+          <Text className="ml-2 text-[#d2af84] font-bold text-base">
+            ${totalPrice}
+          </Text>
+          <Text className="ml-1 text-gray-400 text-xs">/total</Text>
+        </View>
+
+        {/* Booking Time */}
+        <Text className="text-xs text-gray-400 mt-2" numberOfLines={1}>
+          Booked on {format(new Date(createdAt), "MMM dd yyyy")}
+        </Text>
+      </View>
+    </TouchableOpacity>
   );
 };
 

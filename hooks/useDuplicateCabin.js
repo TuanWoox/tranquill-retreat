@@ -23,7 +23,7 @@ export const useDuplicateCabin = () => {
       Toast.show({
         type: "error",
         text1: "Duplicate",
-        text2: "Fail to duplicate",
+        text2: err?.message || "Fail to duplicate",
       });
     },
   });

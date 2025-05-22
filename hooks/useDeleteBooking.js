@@ -2,7 +2,9 @@ import { useMutation } from "@tanstack/react-query";
 import { deleteBooking } from "../services/bookingService";
 import queryClient from "../config/reactQuery";
 import Toast from "react-native-toast-message";
+import { useRouter } from "expo-router";
 export const useDeleteBooking = function () {
+  const router = useRouter();
   const {
     mutate: deleteBookingFn,
     isLoading,
@@ -19,12 +21,13 @@ export const useDeleteBooking = function () {
         text1: "Delete",
         text2: "Delete Successfully",
       });
+      router.back();
     },
     onError: (err) => {
       Toast.show({
         type: "error",
         text1: "Delete",
-        text2: "Fail to delete",
+        text2: err?.message || "Fail to delete booking",
       });
     },
   });

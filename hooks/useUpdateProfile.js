@@ -23,7 +23,7 @@ export const useUpdateProfile = function () {
     onError: (err) => {
       Toast.show({
         type: "error",
-        text1: "Lỗi",
+        text1: "Update",
         text2: err?.message || "Fail to update",
       });
     },

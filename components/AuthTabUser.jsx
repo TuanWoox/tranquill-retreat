@@ -14,12 +14,12 @@ function AuthTabUser() {
       </View>
       <View className="w-72 space-y-4">
         <ButtonAuthTab handlePress={() => router.push("/user/booking")}>
-          Quản lí booking
+          Manage Booking
         </ButtonAuthTab>
         <ButtonAuthTab handlePress={() => router.push("/user/profile")}>
-          Chỉnh sửa thông tin
+          Manage Personal Info
         </ButtonAuthTab>
-        <ButtonAuthTab handlePress={logout}>Đăng xuất</ButtonAuthTab>
+        <ButtonAuthTab handlePress={logout}>Logout</ButtonAuthTab>
       </View>
     </View>
   );

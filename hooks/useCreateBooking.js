@@ -48,7 +48,7 @@ export const useCreateBooking = () => {
       Toast.show({
         type: "error",
         text1: "Booking",
-        text2: error.message || "Fail to book",
+        text2: error?.message || "Fail to create booking",
       });
     },
   });
