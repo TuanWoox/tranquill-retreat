@@ -16,15 +16,15 @@ export const useDeleteCabin = function () {
       });
       Toast.show({
         type: "success",
-        text1: "Xóa",
-        text2: "Xóa thành công",
+        text1: "Delete",
+        text2: "Delete Successfully",
       });
     },
     onError: (err) => {
       Toast.show({
         type: "error",
-        text1: "Xóa",
-        text2: "Xóa thất bại",
+        text1: "Delete",
+        text2: "Fail to delete",
       });
     },
   });

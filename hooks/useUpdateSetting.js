@@ -13,15 +13,15 @@ export const useUpdateSetting = () => {
       queryClient.setQueryData(["settings"], data);
       Toast.show({
         type: "success",
-        text1: "Cập nhật",
-        text2: "Cập nhật thành công",
+        text1: "Update",
+        text2: "Update successfully",
       });
     },
     onError: (err) => {
       Toast.show({
         type: "error",
-        text1: "Lỗi",
-        text2: err?.message || "Có lỗi xảy ra khi cập nhật",
+        text1: "Update",
+        text2: err?.message || "Fail to update",
       });
     },
   });

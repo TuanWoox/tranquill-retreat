@@ -1,3 +1,4 @@
+import axios from "axios";
 import axiosAuth from "../axios/config";
 const API_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
@@ -7,6 +8,17 @@ export const getAllCabins = async () => {
     return response.data;
   } catch (error) {
     const errMsg = error.response?.data?.message || "Không thể lấy cabin";
+    throw { message: errMsg };
+  }
+};
+export const getOneCabin = async ({ cabinId }) => {
+  try {
+    const response = await axios.get(`${API_URL}/cabin/getOneCabin`, {
+      params: { cabinId },
+    });
+    return response.data;
+  } catch (err) {
+    const errMsg = err.response?.data?.message || "Không thể nhân bản cabin";
     throw { message: errMsg };
   }
 };
@@ -43,6 +55,24 @@ export const createCabin = async (data) => {
     };
     const reponse = await axiosAuth.post(
       `${API_URL}/cabin/createCabin`,
+      data,
+      config
+    );
+    return reponse.data;
+  } catch (err) {
+    const errMsg = err.reponse?.data?.message || "Không thể tạo cabin";
+    throw { message: errMsg };
+  }
+};
+export const updateCabin = async (data) => {
+  try {
+    const config = {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    };
+    const reponse = await axiosAuth.put(
+      `${API_URL}/cabin/updateCabin`,
       data,
       config
     );

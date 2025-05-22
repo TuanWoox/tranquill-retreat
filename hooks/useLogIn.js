@@ -28,8 +28,8 @@ export function useLogIn() {
       dispatch({ type: "LOGIN_FAILURE", payload: msg });
       Toast.show({
         type: "error",
-        text1: "Lỗi",
-        text2: err?.message || "Có lỗi xảy ra khi đăng nhập",
+        text1: "Error",
+        text2: err?.message || "There was error during login process",
       });
     },
   });
