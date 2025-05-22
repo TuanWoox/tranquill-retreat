@@ -1,21 +1,22 @@
 import { useMutation } from "@tanstack/react-query";
-import { updateBooking } from "../services/bookingService";
-import queryClient from "../config/reactQuery";
+import { updateCabin } from "../services/cabinService";
 import Toast from "react-native-toast-message";
+import queryClient from "@/config/reactQuery";
 
-export const useUpdateBooking = function () {
+export const useUpdateCabin = function () {
   const {
-    mutate: updateBookingFn,
-    isLoading: isUpdating,
-    error: updateError,
+    mutate: updateCabinFn,
+    isLoading,
+    error,
   } = useMutation({
-    mutationFn: updateBooking,
+    mutationFn: updateCabin,
     onSuccess: (data) => {
-      queryClient.setQueryData(["booking", data._id], data);
-      queryClient.setQueryData(["bookings"], (oldValue) => {
+      queryClient.setQueryData(["cabins"], (oldValue) => {
         if (!oldValue) return [];
         return oldValue.map((item) => (item._id === data._id ? data : item));
       });
+
+      queryClient.setQueryData(["cabin", data._id], data);
 
       Toast.show({
         type: "success",
@@ -31,9 +32,10 @@ export const useUpdateBooking = function () {
       });
     },
   });
+
   return {
-    updateBookingFn,
-    isUpdating,
-    updateError,
+    updateCabinFn,
+    isLoading,
+    error,
   };
 };

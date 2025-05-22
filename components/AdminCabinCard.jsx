@@ -3,10 +3,11 @@ import { View, Text, TouchableOpacity, Image, Alert } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { useDeleteCabin } from "@/hooks/useDeleteCabin";
 import { useDuplicateCabin } from "@/hooks/useDuplicateCabin";
+import { useRouter } from "expo-router";
 const IMAGE_URL = process.env.EXPO_PUBLIC_BACKEND_URL_IMAGE;
 const AdminCabinCard = ({ cabin, onDelete, onEdit }) => {
   const { _id: id, name, maxCapacity, regularPrice, discount, image } = cabin;
-
+  const router = useRouter();
   const { deleteCabinFn, isLoading, error } = useDeleteCabin();
   const {
     duplicateCabinFn,
@@ -72,9 +73,11 @@ const AdminCabinCard = ({ cabin, onDelete, onEdit }) => {
         <View className="flex-row justify-end space-x-2 mt-3 gap-3">
           <TouchableOpacity
             className="bg-yellow-500 px-3 py-1 rounded-lg"
-            onPress={() => onEdit(cabin)}
+            onPress={() => {
+              router.navigate(`/cabins/${id}/edit`);
+            }}
           >
-            <Text className="text-black font-medium">Sửa</Text>
+            <Text className="text-black font-medium">Edit</Text>
           </TouchableOpacity>
           <TouchableOpacity
             className="bg-yellow-500 px-3 py-1 rounded-lg"
@@ -83,7 +86,7 @@ const AdminCabinCard = ({ cabin, onDelete, onEdit }) => {
             }}
           >
             <Text className="text-black font-medium">
-              {isDuplicating ? "Đang nhân bản" : "Nhân bản"}
+              {isDuplicating ? "Duplicating" : "Duplicate"}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -91,7 +94,7 @@ const AdminCabinCard = ({ cabin, onDelete, onEdit }) => {
             onPress={handleDelete}
           >
             <Text className="text-white font-medium">
-              {isLoading ? "Đang xóa" : "Xóa"}
+              {isLoading ? "Deleting" : "Delete"}
             </Text>
           </TouchableOpacity>
         </View>

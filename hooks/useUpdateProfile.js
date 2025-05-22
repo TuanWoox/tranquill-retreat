@@ -15,8 +15,8 @@ export const useUpdateProfile = function () {
       queryClient.setQueryData(["userInfo"], data.updatedUser);
       Toast.show({
         type: "success",
-        text1: "Cập nhật",
-        text2: "Cập nhật thành công",
+        text1: "Update",
+        text2: "Update Successfully",
       });
       dispatch({ type: "UPDATE", payload: data.user });
     },
@@ -24,7 +24,7 @@ export const useUpdateProfile = function () {
       Toast.show({
         type: "error",
         text1: "Lỗi",
-        text2: err?.message || "Có lỗi xảy ra khi cập nhật",
+        text2: err?.message || "Fail to update",
       });
     },
   });
