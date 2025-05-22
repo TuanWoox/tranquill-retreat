@@ -32,3 +32,16 @@ export const validateJWT = async (data) => {
     throw { message: errMsg };
   }
 };
+export const identityVerification = async (data) => {
+  try {
+    const response = await axiosAuth.post(
+      `${API_URL}/auth/identityVerification`,
+      data
+    );
+    return response.data;
+  } catch (error) {
+    const errMsg =
+      error.response?.data?.message || "Không thể xác thực danh tính";
+    throw { message: errMsg };
+  }
+}
