@@ -5,8 +5,9 @@ import { getOneBooking } from "../services/bookingService";
 export const useGetOneBooking = function (id) {
   const { data, isLoading, error } = useQuery({
     queryKey: ["booking", id],
-    queryFn: getOneBooking,
-    enabled: !!id, // only run if id exists
+    queryFn: () => {
+      return getOneBooking(id);
+    },
   });
 
   return { data, isLoading, error };

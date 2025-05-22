@@ -30,7 +30,7 @@ export const useCreateCabin = () => {
       Toast.show({
         type: "error",
         text1: "Create",
-        text2: "Fail to create",
+        text2: err?.message || "Fail to create cabin",
       });
     },
   });

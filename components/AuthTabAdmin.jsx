@@ -14,12 +14,12 @@ function AuthTabAdmin() {
       </View>
       <View className="w-72 space-y-4">
         <ButtonAuthTab handlePress={() => router.push("/admin/settingAdjust")}>
-          Thiết lập app
+          Adjust App Setting
         </ButtonAuthTab>
         <ButtonAuthTab handlePress={() => router.push("/user/profile")}>
-          Chỉnh sửa thông tin
+          Manage Personal Information
         </ButtonAuthTab>
-        <ButtonAuthTab handlePress={logout}>Đăng xuất</ButtonAuthTab>
+        <ButtonAuthTab handlePress={logout}>Logout</ButtonAuthTab>
       </View>
     </View>
   );

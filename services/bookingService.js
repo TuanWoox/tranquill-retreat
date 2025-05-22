@@ -10,11 +10,15 @@ export const getAllBookings = async () => {
     throw { message: errMsg };
   }
 };
-export const deleteBooking = async (data) => {
+export const deleteBooking = async (id) => {
   try {
-    const response = await axiosAuth.post(
+    const response = await axiosAuth.delete(
       `${API_URL}/booking/deleteBooking`,
-      data
+      {
+        data: {
+          id,
+        },
+      }
     );
     return response.data;
   } catch (error) {
@@ -23,10 +27,9 @@ export const deleteBooking = async (data) => {
   }
 };
 export const getOneBooking = async (data) => {
-  const [_id, bookingId] = data.queryKey;
   try {
-    const response = await axiosAuth.post(`${API_URL}/booking/getOneBooking`, {
-      bookingId,
+    const response = await axiosAuth.get(`${API_URL}/booking/getOneBooking`, {
+      params: { bookingId: data },
     });
     return response.data;
   } catch (error) {
@@ -35,6 +38,7 @@ export const getOneBooking = async (data) => {
     throw { message: errMsg };
   }
 };
+
 export const updateBooking = async (data) => {
   try {
     const response = await axiosAuth.post(`${API_URL}/booking/updateBooking`, {

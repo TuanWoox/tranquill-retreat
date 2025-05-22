@@ -2,8 +2,10 @@ import { useMutation } from "@tanstack/react-query";
 import { updateBooking } from "../services/bookingService";
 import queryClient from "../config/reactQuery";
 import Toast from "react-native-toast-message";
+import { useRouter } from "expo-router";
 
 export const useUpdateBooking = function () {
+  const router = useRouter();
   const {
     mutate: updateBookingFn,
     isLoading: isUpdating,
@@ -22,13 +24,15 @@ export const useUpdateBooking = function () {
         text1: "Update",
         text2: "Update Successfully",
       });
+      router.back();
     },
     onError: (err) => {
       Toast.show({
         type: "error",
         text1: "Update",
-        text2: "Fail to update",
+        text2: err?.message || "Fail to update",
       });
+      router.back();
     },
   });
   return {

@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   Switch,
   StatusBar,
-  Image,
+  Modal,
   Dimensions,
 } from "react-native";
 import { Ionicons, FontAwesome5, MaterialIcons } from "@expo/vector-icons";
@@ -16,7 +16,6 @@ import DateSelector from "./DateSelector";
 import { useAuthContext } from "@/context/AuthContext";
 import { differenceInDays } from "date-fns";
 import { useRouter } from "expo-router";
-import { Picker } from "@react-native-picker/picker";
 import Toast from "react-native-toast-message";
 import { useCreateBooking } from "@/hooks/useCreateBooking";
 import { LinearGradient } from "expo-linear-gradient";
@@ -32,6 +31,7 @@ export default function Reservation({ cabin, settings }) {
   const [numGuests, setNumGuests] = useState(1);
   const [hasBreakfast, setHasBreakfast] = useState(false);
   const [observations, setObservations] = useState("");
+  const [showGuestModal, setShowGuestModal] = useState(false);
 
   const handleDateChange = (newRange) => {
     setDateRange(newRange);
@@ -39,6 +39,11 @@ export default function Reservation({ cabin, settings }) {
 
   const handleResetDates = () => {
     setDateRange({ from: null, to: null });
+  };
+
+  const handleGuestSelect = (guestCount) => {
+    setNumGuests(guestCount);
+    setShowGuestModal(false);
   };
 
   const handleCreateBooking = () => {
@@ -69,16 +74,12 @@ export default function Reservation({ cabin, settings }) {
         ? settings.breakfastPrice * numGuests * numNights
         : 0;
 
-    const totalPrice = cabinPrice * numNights + extrasPrice;
-
     const bookingData = {
       startDate: dateRange.from,
       endDate: dateRange.to,
-      numNights,
       numGuests,
       cabinPrice: cabinPrice * numNights,
       extrasPrice,
-      totalPrice,
       hasBreakfast,
       observations,
       cabin: cabin._id || cabin.id,
@@ -129,6 +130,8 @@ export default function Reservation({ cabin, settings }) {
       : 0;
   const totalPrice = totalCabinPrice + totalBreakfastPrice;
 
+  const maxGuests = cabin?.maxCapacity || settings?.maxNumberOfGuests || 8;
+
   return (
     <LinearGradient
       colors={["#1E293B", "#0F172A"]}
@@ -170,7 +173,6 @@ export default function Reservation({ cabin, settings }) {
         )}
 
         {/* Date Selector Section */}
-
         <DateSelector
           settings={
             settings || {
@@ -194,29 +196,15 @@ export default function Reservation({ cabin, settings }) {
 
           <View style={styles.formItem}>
             <Text style={styles.formLabel}>Number of Guests</Text>
-            <View style={styles.pickerContainer}>
-              <Picker
-                selectedValue={numGuests}
-                style={styles.picker}
-                dropdownIconColor="#E5E7EB"
-                onValueChange={(value) => setNumGuests(value)}
-              >
-                {Array.from(
-                  {
-                    length:
-                      settings?.maxNumberOfGuests || cabin?.maxCapacity || 8,
-                  },
-                  (_, i) => i + 1
-                ).map((num) => (
-                  <Picker.Item
-                    key={num}
-                    label={`${num} ${num === 1 ? "guest" : "guests"}`}
-                    value={num}
-                    color="#000000"
-                  />
-                ))}
-              </Picker>
-            </View>
+            <TouchableOpacity
+              style={styles.guestPickerButton}
+              onPress={() => setShowGuestModal(true)}
+            >
+              <Text style={styles.guestPickerText}>
+                {numGuests} {numGuests === 1 ? "guest" : "guests"}
+              </Text>
+              <Ionicons name="chevron-down" size={20} color="#E5E7EB" />
+            </TouchableOpacity>
           </View>
 
           <View style={styles.formItem}>
@@ -334,6 +322,74 @@ export default function Reservation({ cabin, settings }) {
         {/* Bottom Padding */}
         <View style={{ height: 40 }} />
       </ScrollView>
+
+      {/* Guest Selection Modal */}
+      <Modal
+        visible={showGuestModal}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setShowGuestModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <LinearGradient
+              colors={["#334155", "#1E293B"]}
+              style={styles.modalContent}
+            >
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitle}>Select Number of Guests</Text>
+                <TouchableOpacity
+                  onPress={() => setShowGuestModal(false)}
+                  style={styles.closeButton}
+                >
+                  <Ionicons name="close" size={24} color="#E5E7EB" />
+                </TouchableOpacity>
+              </View>
+
+              <ScrollView style={styles.guestOptionsContainer}>
+                {Array.from({ length: maxGuests }, (_, i) => i + 1).map(
+                  (guestCount) => (
+                    <TouchableOpacity
+                      key={guestCount}
+                      style={[
+                        styles.guestOption,
+                        numGuests === guestCount && styles.selectedGuestOption,
+                      ]}
+                      onPress={() => handleGuestSelect(guestCount)}
+                    >
+                      <View style={styles.guestOptionContent}>
+                        <FontAwesome5
+                          name="users"
+                          size={16}
+                          color={
+                            numGuests === guestCount ? "#FBBF24" : "#94A3B8"
+                          }
+                        />
+                        <Text
+                          style={[
+                            styles.guestOptionText,
+                            numGuests === guestCount &&
+                              styles.selectedGuestOptionText,
+                          ]}
+                        >
+                          {guestCount} {guestCount === 1 ? "Guest" : "Guests"}
+                        </Text>
+                      </View>
+                      {numGuests === guestCount && (
+                        <Ionicons
+                          name="checkmark-circle"
+                          size={20}
+                          color="#FBBF24"
+                        />
+                      )}
+                    </TouchableOpacity>
+                  )
+                )}
+              </ScrollView>
+            </LinearGradient>
+          </View>
+        </View>
+      </Modal>
     </LinearGradient>
   );
 }
@@ -458,17 +514,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 8,
   },
-  pickerContainer: {
+  guestPickerButton: {
     backgroundColor: "#1E293B",
     borderRadius: 12,
-    overflow: "hidden",
+    padding: 16,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.1)",
   },
-  picker: {
+  guestPickerText: {
     color: "#E5E7EB",
-    backgroundColor: "transparent",
-    height: 50,
+    fontSize: 16,
   },
   switchContainer: {
     flexDirection: "row",
@@ -621,6 +679,66 @@ const styles = StyleSheet.create({
   loginButtonText: {
     color: "#FBBF24",
     fontSize: 16,
+    fontWeight: "600",
+  },
+  // Modal Styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  modalContainer: {
+    width: "100%",
+    maxWidth: 400,
+    borderRadius: 20,
+    overflow: "hidden",
+  },
+  modalContent: {
+    maxHeight: 500,
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(255,255,255,0.1)",
+  },
+  modalTitle: {
+    color: "#FFF",
+    fontSize: 18,
+    fontWeight: "600",
+  },
+  closeButton: {
+    padding: 4,
+  },
+  guestOptionsContainer: {
+    maxHeight: 300,
+  },
+  guestOption: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(255,255,255,0.1)",
+  },
+  selectedGuestOption: {
+    backgroundColor: "rgba(251,191,36,0.1)",
+  },
+  guestOptionContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  guestOptionText: {
+    color: "#E5E7EB",
+    fontSize: 16,
+  },
+  selectedGuestOptionText: {
+    color: "#FBBF24",
     fontWeight: "600",
   },
 });

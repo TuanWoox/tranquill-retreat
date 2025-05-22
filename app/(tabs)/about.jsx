@@ -1,6 +1,7 @@
 import { ImageBackground, ScrollView, Text, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function About() {
   return (
@@ -9,7 +10,7 @@ export default function About() {
       className="flex-1"
     >
       {/* Gradient overlay for better text contrast */}
-      <View className="absolute inset-0 bg-gradient-to-b from-black/30 to-black/70" />
+      <SafeAreaView className="absolute inset-0 bg-black opacity-5" />
 
       <StatusBar style="light" />
 

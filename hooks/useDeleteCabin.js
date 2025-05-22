@@ -24,7 +24,7 @@ export const useDeleteCabin = function () {
       Toast.show({
         type: "error",
         text1: "Delete",
-        text2: "Fail to delete",
+        text2: err?.message || "Fail to delete cabin",
       });
     },
   });

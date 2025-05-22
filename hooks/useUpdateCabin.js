@@ -28,7 +28,7 @@ export const useUpdateCabin = function () {
       Toast.show({
         type: "error",
         text1: "Update",
-        text2: "Fail to update",
+        text2: err?.message || "Fail to update",
       });
     },
   });
