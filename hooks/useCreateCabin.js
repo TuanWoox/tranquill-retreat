@@ -20,8 +20,8 @@ export const useCreateCabin = () => {
 
       Toast.show({
         type: "success",
-        text1: "Tạo",
-        text2: "Tạo thành công",
+        text1: "Create",
+        text2: "Create Successfully",
       });
 
       router.back(); // 👈 Go back instead of replace
@@ -29,8 +29,8 @@ export const useCreateCabin = () => {
     onError: (err) => {
       Toast.show({
         type: "error",
-        text1: "Tạo",
-        text2: "Tạo thất bại",
+        text1: "Create",
+        text2: "Fail to create",
       });
     },
   });

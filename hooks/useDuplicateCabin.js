@@ -15,15 +15,15 @@ export const useDuplicateCabin = () => {
       });
       Toast.show({
         type: "success",
-        text1: "Nhân bản",
-        text2: "Nhân bản thành công",
+        text1: "Duplicate",
+        text2: "Duplicate Successfully",
       });
     },
     onError: (err) => {
       Toast.show({
         type: "error",
-        text1: "Nhân bản",
-        text2: "Nhân bản thất bại",
+        text1: "Duplicate",
+        text2: "Fail to duplicate",
       });
     },
   });

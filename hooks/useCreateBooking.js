@@ -37,8 +37,8 @@ export const useCreateBooking = () => {
 
       Toast.show({
         type: "success",
-        text1: "Đặt phòng",
-        text2: "Đặt phòng thành công",
+        text1: "Booking",
+        text2: "Booking Successfully",
       });
 
       router.push("/user/booking");
@@ -47,8 +47,8 @@ export const useCreateBooking = () => {
       console.error("Booking error:", error);
       Toast.show({
         type: "error",
-        text1: "Đặt phòng",
-        text2: error.message || "Đặt phòng thất bại",
+        text1: "Booking",
+        text2: error.message || "Fail to book",
       });
     },
   });
