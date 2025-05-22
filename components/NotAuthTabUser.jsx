@@ -25,6 +25,14 @@ function NotAuthTabUser() {
         >
           <Text className="text-black text-center font-semibold">Đăng Ký</Text>
         </TouchableOpacity>
+        <TouchableOpacity
+          className="z-10 mt-4"
+          onPress={() => router.push("/auth/forgetPassword")}
+        >
+          <Text className="text-white text-center underline">
+            Quên mật khẩu?
+          </Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
