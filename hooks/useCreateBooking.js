@@ -3,6 +3,7 @@ import { createBooking } from "@/services/bookingService";
 import { useMutation } from "@tanstack/react-query";
 import Toast from "react-native-toast-message";
 import { useRouter } from "expo-router";
+import queryClient from "@/config/reactQuery";
 export const useCreateBooking = () => {
   const { user } = useAuthContext();
   const router = useRouter();
@@ -35,6 +36,8 @@ export const useCreateBooking = () => {
         });
       }
 
+      queryClient.invalidateQueries(["bookDates", bookingData.cabin._id]);
+
       Toast.show({
         type: "success",
         text1: "Booking",
@@ -44,7 +47,6 @@ export const useCreateBooking = () => {
       router.push("/user/booking");
     },
     onError: (error) => {
-      console.error("Booking error:", error);
       Toast.show({
         type: "error",
         text1: "Booking",

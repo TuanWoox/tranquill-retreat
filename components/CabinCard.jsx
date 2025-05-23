@@ -2,11 +2,11 @@ import React from "react";
 import { View, Text, TouchableOpacity, Image } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 const IMAGE_URL = process.env.EXPO_PUBLIC_BACKEND_URL_IMAGE;
-import { Link } from "expo-router";
+import { useRouter } from "expo-router";
 
 const CabinCard = ({ cabin }) => {
-  const { id, name, maxCapacity, regularPrice, discount, image } = cabin;
-
+  const { _id, name, maxCapacity, regularPrice, discount, image } = cabin;
+  const router = useRouter();
   return (
     <View className="flex-row bg-[#72716e] rounded-xl overflow-hidden border border-[#524d4d] my-4 shadow-lg">
       {/* Left: Image Section */}
@@ -52,17 +52,14 @@ const CabinCard = ({ cabin }) => {
           <Text className="text-white text-sm ml-1">/ night</Text>
         </View>
 
-        <Link
-          href={{
-            pathname: `/cabins/${id}`,
-            params: { cabinData: JSON.stringify(cabin) },
+        <TouchableOpacity
+          className="bg-[#d2af84] px-3 py-1 rounded-lg self-end mt-2"
+          onPress={() => {
+            router.navigate(`/cabins/${_id}`);
           }}
-          asChild
         >
-          <TouchableOpacity className="bg-[#d2af84] px-3 py-1 rounded-lg self-end mt-2">
-            <Text className="text-[#312e2b] font-medium">Reserve →</Text>
-          </TouchableOpacity>
-        </Link>
+          <Text className="text-[#312e2b] font-medium">Reserve →</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );

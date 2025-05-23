@@ -1,11 +1,5 @@
 import React, { useEffect } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ActivityIndicator,
-} from "react-native";
+import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { differenceInDays } from "date-fns";
 import { useGetBookedDates } from "@/hooks/useGetBookedDates";
@@ -103,19 +97,26 @@ export default function DateSelector({
   };
 
   return (
-    <View style={styles.wrapper}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Select Your Dates</Text>
+    <View
+      className="my-4 rounded-2xl overflow-hidden self-stretch bg-slate-800 shadow-md"
+      style={{ elevation: 5 }}
+    >
+      <View className="flex-row justify-between items-center p-4 border-b border-slate-600">
+        <Text className="text-xl font-semibold text-white">
+          Select Your Dates
+        </Text>
         {isLoading && (
-          <View style={styles.loadingContainer}>
+          <View className="flex-row items-center">
             <ActivityIndicator size="small" color="#FDBB30" />
-            <Text style={styles.loadingText}>Loading availability...</Text>
+            <Text className="ml-2 text-sm text-slate-400">
+              Loading availability...
+            </Text>
           </View>
         )}
       </View>
 
       <Calendar
-        style={styles.calendar}
+        className="pb-2 bg-slate-800"
         current={new Date().toISOString().split("T")[0]}
         minDate={new Date().toISOString().split("T")[0]}
         onDayPress={onDayPress}
@@ -140,154 +141,53 @@ export default function DateSelector({
         }}
       />
 
-      <View style={styles.dateDisplay}>
-        <View style={styles.dateBox}>
-          <Text style={styles.dateLabel}>CHECK IN</Text>
-          <Text style={styles.dateValue}>
+      <View className="flex-row p-4 border-t border-b border-slate-600">
+        <View className="flex-1 items-center">
+          <Text className="text-xs font-semibold text-slate-400 mb-1">
+            CHECK IN
+          </Text>
+          <Text className="text-base font-medium text-white">
             {from ? from.toLocaleDateString() : "Select date"}
           </Text>
         </View>
-        <View style={styles.dateSeparator} />
-        <View style={styles.dateBox}>
-          <Text style={styles.dateLabel}>CHECK OUT</Text>
-          <Text style={styles.dateValue}>
+        <View className="w-px bg-slate-600 mx-2" />
+        <View className="flex-1 items-center">
+          <Text className="text-xs font-semibold text-slate-400 mb-1">
+            CHECK OUT
+          </Text>
+          <Text className="text-base font-medium text-white">
             {to ? to.toLocaleDateString() : "Select date"}
           </Text>
         </View>
       </View>
 
-      <View style={styles.summary}>
+      <View className="flex-row justify-between items-center p-4">
         <View>
-          <Text style={styles.priceLabel}>
-            <Text style={styles.price}>${nightlyPrice.toLocaleString()}</Text>{" "}
-            <Text style={styles.perNight}>per night</Text>
+          <Text className="flex-row items-baseline">
+            <Text className="text-[22px] font-bold text-amber-400">
+              ${nightlyPrice.toLocaleString()}
+            </Text>
+            <Text className="text-base text-slate-400"> per night</Text>
           </Text>
           {numNights > 0 && (
-            <Text style={styles.totalLabel}>
+            <Text className="text-white text-sm mt-1.5">
               {numNights} night{numNights !== 1 ? "s" : ""} ={" "}
-              <Text style={styles.totalPrice}>
+              <Text className="text-amber-400 font-semibold">
                 ${totalPrice.toLocaleString()}
               </Text>
             </Text>
           )}
         </View>
         {(from || to) && (
-          <TouchableOpacity style={styles.resetBtn} onPress={onReset}>
+          <TouchableOpacity
+            className="flex-row items-center bg-amber-400/20 py-2 px-4 rounded-lg"
+            onPress={onReset}
+          >
             <Ionicons name="refresh-outline" size={16} color="#FFFFFF" />
-            <Text style={styles.resetText}>Reset</Text>
+            <Text className="text-white font-semibold text-sm ml-1">Reset</Text>
           </TouchableOpacity>
         )}
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  wrapper: {
-    marginVertical: 16,
-    borderRadius: 16,
-    overflow: "hidden",
-    alignSelf: "stretch", // Changed from fixed width to stretch
-    backgroundColor: "#1E293B",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 5,
-  },
-  header: {
-    padding: 16,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    borderBottomWidth: 1,
-    borderBottomColor: "#334155",
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: "#FFFFFF",
-  },
-  loadingContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  loadingText: {
-    marginLeft: 8,
-    fontSize: 14,
-    color: "#94A3B8",
-  },
-  calendar: {
-    paddingBottom: 8,
-    backgroundColor: "#1E293B",
-  },
-  dateDisplay: {
-    flexDirection: "row",
-    padding: 16,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: "#334155",
-  },
-  dateBox: {
-    flex: 1,
-    alignItems: "center",
-  },
-  dateLabel: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: "#94A3B8",
-    marginBottom: 4,
-  },
-  dateValue: {
-    fontSize: 16,
-    fontWeight: "500",
-    color: "#FFFFFF",
-  },
-  dateSeparator: {
-    width: 1,
-    backgroundColor: "#334155",
-    marginHorizontal: 8,
-  },
-  summary: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 16,
-  },
-  priceLabel: {
-    flexDirection: "row",
-    alignItems: "baseline",
-  },
-  price: {
-    color: "#FDBB30",
-    fontSize: 22,
-    fontWeight: "700",
-  },
-  perNight: {
-    color: "#94A3B8",
-    fontSize: 16,
-  },
-  totalLabel: {
-    color: "#FFFFFF",
-    fontSize: 15,
-    marginTop: 6,
-  },
-  totalPrice: {
-    color: "#FDBB30",
-    fontWeight: "600",
-  },
-  resetBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "rgba(253, 187, 48, 0.2)",
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-  },
-  resetText: {
-    color: "#FFFFFF",
-    fontWeight: "600",
-    fontSize: 14,
-    marginLeft: 4,
-  },
-});

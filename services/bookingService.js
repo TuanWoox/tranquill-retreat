@@ -66,13 +66,10 @@ export const createBooking = async (data) => {
 };
 
 export const getBookedDates = async (data) => {
-  const cabinId = data.queryKey[1].cabinId;
-
   try {
     const response = await axiosAuth.get(
-      `${API_URL}/booking/getBookedDates/${cabinId}`
+      `${API_URL}/booking/getBookedDates/${data}`
     );
-
     return response.data;
   } catch (error) {
     const errMsg = error.response?.data?.message || "Không thể lấy lịch đã đặt";
