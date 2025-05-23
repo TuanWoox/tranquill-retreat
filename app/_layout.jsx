@@ -23,6 +23,10 @@ export default function RootLayout() {
             options={{ headerShown: false }}
           />
           <Stack.Screen
+            name="user/profile/changePassword"
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
             name="user/booking/index"
             options={{ headerShown: false }}
           />

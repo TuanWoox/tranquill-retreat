@@ -36,3 +36,22 @@ export const resetPassword = async (data) => {
         throw { message: errMsg };
     }
 };
+export const changePassword = async (oldPassword, newPassword) => {
+  try {
+    const response = await axiosAuth.post(
+      `${API_URL}/user/changePassword`,
+      {
+        oldPassword,
+        newPassword,
+      },
+      {
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    const errMsg =
+      error.response?.data?.message || "Thay đổi mật khẩu thất bại";
+    throw new Error(errMsg);
+  }
+};

@@ -10,8 +10,10 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { useUpdateProfile } from "@/hooks/useUpdateProfile";
+import { useRouter } from "expo-router";
 export default function UpdateProfileForm({ guest }) {
   const { fullName, email, phoneNumber, nationalId, dateOfBirth } = guest;
+  const router = useRouter();
   const {
     control,
     handleSubmit,
@@ -232,6 +234,15 @@ export default function UpdateProfileForm({ guest }) {
         >
           <Text className="text-center text-black font-semibold">
             {isLoading ? "Đang cập nhật" : "Cập nhật"}
+          </Text>
+        </TouchableOpacity>
+        {/* ChangePassword Button */}
+        <TouchableOpacity
+          className="w-full bg-[#d2af84] p-4 rounded-md mt-4"
+          onPress={() => router.push("/user/profile/changePassword")}
+        >
+          <Text className="text-center text-black font-semibold">
+            Đổi mật khẩu
           </Text>
         </TouchableOpacity>
       </View>
