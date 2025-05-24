@@ -9,6 +9,7 @@ function ActionSection({
   canEdit,
   canDelete,
   onDelete,
+  id,
 }) {
   const { user } = useAuthContext();
   const router = useRouter();

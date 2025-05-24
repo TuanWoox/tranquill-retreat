@@ -162,6 +162,7 @@ export default function BookingDetail() {
             canDelete={canDelete}
             canEdit={canEdit}
             onDelete={onDelete}
+            id={_id}
           />
         </ScrollView>
       </SafeAreaView>
