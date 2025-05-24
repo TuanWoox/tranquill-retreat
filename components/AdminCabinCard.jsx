@@ -26,9 +26,14 @@ const AdminCabinCard = ({ cabin, onDelete, onEdit }) => {
   };
 
   return (
-    <View className="flex-row bg-[#3b3b3b] rounded-xl overflow-hidden border border-[#524d4d] my-4 shadow-lg">
+    <View
+      className="flex-row bg-[#3b3b3b] rounded-xl overflow-hidden border border-[#524d4d] my-4 shadow-lg"
+      onTouchEnd={() => {
+        router.navigate(`/cabins/${id}/admin/bookings`);
+      }}
+    >
       {/* Left: Image Section */}
-      <View className="w-40 h-40">
+      <View className="w-40 h-40 ">
         <Image
           source={{
             uri:
@@ -70,7 +75,7 @@ const AdminCabinCard = ({ cabin, onDelete, onEdit }) => {
           <Text className="text-white text-sm ml-1">/ night</Text>
         </View>
 
-        <View className="flex-row justify-end space-x-2 mt-3 gap-3">
+        <View className="flex-row justify-end space-x-2 mt-3 gap-3 ">
           <TouchableOpacity
             className="bg-yellow-500 px-3 py-1 rounded-lg"
             onPress={() => {

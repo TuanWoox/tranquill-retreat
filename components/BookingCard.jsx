@@ -31,6 +31,7 @@ const BookingCard = ({ booking }) => {
     totalPrice,
     numGuests,
     createdAt,
+    status,
     cabin,
   } = booking;
   const router = useRouter();
