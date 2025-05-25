@@ -18,38 +18,32 @@ const UpdateProfileScreen = () => {
 
   if (isLoading) {
     return (
-      <View className="flex-1 items-center justify-center bg-primary-200">
-        <Text className="text-lg text-white">Loading...</Text>
+      <View className="flex-1 items-center justify-center bg-black">
+        <Text className="text-lg text-[#d2af84] font-semibold">Loading...</Text>
       </View>
     );
   }
 
   return (
-    <View className="flex-1">
-      <ImageBackground
-        source={require("../../../assets/images/aboutBackground.jpg")}
+    <>
+      <ScrollView
         className="flex-1"
-        style={{ resizeMode: "cover" }}
+        contentContainerStyle={{
+          paddingVertical: 40,
+          paddingHorizontal: 20,
+          minHeight: "100%",
+          justifyContent: "center",
+        }}
+        showsVerticalScrollIndicator={false}
       >
-        <View className="absolute inset-0 bg-black opacity-40" />
-
-        {/* Back Button using Expo Router */}
-        <SafeAreaView className="absolute top-2 left-2 z-20">
-          <TouchableOpacity
-            onPress={() => router.back()} // ✅ Go back using Expo Router
-            className="bg-white/80 p-2 rounded-full"
-          >
-            <AntDesign name="arrowleft" size={20} color="black" />
-          </TouchableOpacity>
-        </SafeAreaView>
-
-        <ScrollView className="flex-1">
-          <View className="px-5 py-6">
-            {userInfo && <UpdateProfileForm guest={userInfo} />}
-          </View>
-        </ScrollView>
-      </ImageBackground>
-    </View>
+        <View className="w-full max-w-xl mx-auto bg-black/70 border border-[#d2af84]/30 rounded-3xl p-8 shadow-2xl backdrop-blur-sm">
+          <Text className="text-3xl font-extrabold text-[#d2af84] mb-6 text-center tracking-wide drop-shadow-lg">
+            Update Profile
+          </Text>
+          {userInfo && <UpdateProfileForm guest={userInfo} />}
+        </View>
+      </ScrollView>
+    </>
   );
 };
 

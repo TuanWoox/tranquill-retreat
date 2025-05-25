@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   View,
   Text,
@@ -39,12 +39,14 @@ const EditBookingScreen = () => {
   } = useForm();
   const router = useRouter();
 
-  if (booking && !errors.numGuests) {
-    setValue("numGuests", booking.numGuests);
-    setValue("hasBreakfast", booking.hasBreakfast);
-    setValue("observations", booking.observations || "");
-    setValue("bookingId", booking._id);
-  }
+  useEffect(() => {
+    if (booking) {
+      setValue("numGuests", booking.numGuests);
+      setValue("hasBreakfast", booking.hasBreakfast);
+      setValue("observations", booking.observations || "");
+      setValue("bookingId", booking._id);
+    }
+  }, [booking, setValue]);
 
   if (isGettingTheBooking) {
     return (
@@ -80,232 +82,223 @@ const EditBookingScreen = () => {
   }
 
   return (
-    <View className="flex-1">
-      <ImageBackground
-        source={require("../../../../assets/images/aboutBackground.jpg")}
-        className="flex-1"
-        style={{ resizeMode: "cover" }}
-      >
-        {/* Dark overlay */}
-        <SafeAreaView className="absolute inset-0 bg-black opacity-60" />
+    <>
+      <ScrollView contentContainerStyle={{ padding: 16, paddingTop: 80 }}>
+        {/* Back Button */}
+        <TouchableOpacity
+          onPress={() => router.back()}
+          className="absolute top-10 left-4 bg-white/90 p-2 rounded-full shadow-md z-10"
+        >
+          <AntDesign name="arrowleft" size={22} color="black" />
+        </TouchableOpacity>
 
-        <ScrollView contentContainerStyle={{ padding: 16, paddingTop: 80 }}>
-          {/* Back Button */}
-          <TouchableOpacity
-            onPress={() => router.back()}
-            className="absolute top-10 left-4 bg-white/90 p-2 rounded-full shadow-md z-10"
-          >
-            <AntDesign name="arrowleft" size={22} color="black" />
-          </TouchableOpacity>
+        {/* Form Container */}
+        <View className="bg-white/10 border border-white/20 p-6 rounded-2xl shadow-md">
+          <Text className="text-3xl font-bold text-[#d2af84] mb-6 text-center">
+            Edit Booking
+          </Text>
 
-          {/* Form Container */}
-          <View className="bg-white/10 border border-white/20 p-6 rounded-2xl shadow-md">
-            <Text className="text-3xl font-bold text-[#d2af84] mb-6 text-center">
-              Edit Booking
-            </Text>
+          {/* Guests Picker */}
+          <Text className="text-white text-base mb-2">Number of Guests</Text>
+          <Controller
+            control={control}
+            name="numGuests"
+            rules={{ required: true }}
+            render={({ field: { onChange, value } }) => {
+              const options = [
+                ...Array(booking?.cabin?.maxCapacity || 10).keys(),
+              ].map((i) => ({
+                key: i + 1,
+                label: `${i + 1}`,
+              }));
 
-            {/* Guests Picker */}
-            <Text className="text-white text-base mb-2">Number of Guests</Text>
-            <Controller
-              control={control}
-              name="numGuests"
-              rules={{ required: true }}
-              render={({ field: { onChange, value } }) => {
-                const options = [
-                  ...Array(booking?.cabin?.maxCapacity || 10).keys(),
-                ].map((i) => ({
-                  key: i + 1,
-                  label: `${i + 1}`,
-                }));
-
-                return (
-                  <View style={{ marginBottom: 16 }}>
-                    <ModalSelector
-                      data={options}
-                      initValue={
-                        value ? `Guests: ${value}` : "Select number of guests"
-                      }
-                      onChange={(option) => onChange(option.key)}
-                      style={{
-                        backgroundColor: "#2c2f38",
-                        borderRadius: 12,
-                        borderWidth: 1,
-                        borderColor: "#d2af84",
-                        paddingVertical: 14,
-                        paddingHorizontal: 16,
-                        shadowColor: "#000",
-                        shadowOffset: { width: 0, height: 3 },
-                        shadowOpacity: 0.25,
-                        shadowRadius: 6,
-                        elevation: 5,
-                      }}
-                      initValueTextStyle={{
-                        color: value ? "#d2af84" : "#aaa",
-                        fontSize: 18,
-                        fontWeight: "600",
-                        fontFamily: "System",
-                      }}
-                      selectTextStyle={{
-                        color: "#fff",
-                        fontSize: 18,
-                        fontWeight: "600",
-                        fontFamily: "System",
-                      }}
-                      optionTextStyle={{
-                        color: "#222",
-                        fontSize: 16,
-                        paddingVertical: 10,
-                      }}
-                      cancelText="Cancel"
-                      cancelTextStyle={{
-                        color: "#d2af84",
-                        fontWeight: "600",
-                        fontSize: 16,
-                      }}
-                      optionContainerStyle={{
-                        borderRadius: 12,
-                        backgroundColor: "#fefefe",
-                        marginHorizontal: 10,
-                        marginVertical: 8,
-                        paddingVertical: 8,
-                        shadowColor: "#000",
-                        shadowOffset: { width: 0, height: 2 },
-                        shadowOpacity: 0.1,
-                        shadowRadius: 5,
-                        elevation: 3,
-                      }}
-                    >
-                      <Text
-                        style={{
-                          color: value ? "#d2af84" : "#888",
-                          fontSize: 18,
-                        }}
-                      >
-                        {value ? `Guests: ${value}` : "Select number of guests"}
-                      </Text>
-                    </ModalSelector>
-                  </View>
-                );
-              }}
-            />
-
-            {errors.numGuests && (
-              <Text className="text-red-400 mb-4">This field is required.</Text>
-            )}
-
-            {/* Breakfast Switch */}
-            <View className="flex-row justify-between items-center mb-6">
-              <Text className="text-white text-base">Include Breakfast</Text>
-              <Controller
-                control={control}
-                name="hasBreakfast"
-                render={({ field: { onChange, value } }) => (
-                  <Switch
-                    value={value}
-                    onValueChange={onChange}
-                    trackColor={{ false: "#767577", true: "#d2af84" }}
-                    thumbColor={value ? "#fff" : "#f4f3f4"}
-                  />
-                )}
-              />
-            </View>
-
-            {/* Special Requests Section */}
-            <View className="mb-6">
-              <View className="flex-row items-center mb-3">
-                <Feather name="message-square" size={18} color="#d2af84" />
-                <Text className="text-white text-base ml-2 font-semibold">
-                  Special Requests
-                </Text>
-              </View>
-              <Text className="text-gray-300 text-sm mb-3">
-                Let us know about any special requirements or requests for your
-                stay
-              </Text>
-
-              <Controller
-                control={control}
-                name="observations"
-                render={({ field: { onChange, value } }) => (
-                  <TextInput
-                    value={value}
-                    onChangeText={onChange}
-                    placeholder="Enter your special requests here..."
-                    placeholderTextColor="#888"
-                    multiline={true}
-                    numberOfLines={4}
-                    textAlignVertical="top"
+              return (
+                <View style={{ marginBottom: 16 }}>
+                  <ModalSelector
+                    data={options}
+                    initValue={
+                      value ? `Guests: ${value}` : "Select number of guests"
+                    }
+                    onChange={(option) => onChange(option.key)}
                     style={{
                       backgroundColor: "#2c2f38",
                       borderRadius: 12,
                       borderWidth: 1,
                       borderColor: "#d2af84",
-                      paddingVertical: 12,
+                      paddingVertical: 14,
                       paddingHorizontal: 16,
+                      shadowColor: "#000",
+                      shadowOffset: { width: 0, height: 3 },
+                      shadowOpacity: 0.25,
+                      shadowRadius: 6,
+                      elevation: 5,
+                    }}
+                    initValueTextStyle={{
+                      color: value ? "#d2af84" : "#aaa",
+                      fontSize: 18,
+                      fontWeight: "600",
+                      fontFamily: "System",
+                    }}
+                    selectTextStyle={{
                       color: "#fff",
+                      fontSize: 18,
+                      fontWeight: "600",
+                      fontFamily: "System",
+                    }}
+                    optionTextStyle={{
+                      color: "#222",
                       fontSize: 16,
-                      minHeight: 100,
-                      maxHeight: 150,
+                      paddingVertical: 10,
+                    }}
+                    cancelText="Cancel"
+                    cancelTextStyle={{
+                      color: "#d2af84",
+                      fontWeight: "600",
+                      fontSize: 16,
+                    }}
+                    optionContainerStyle={{
+                      borderRadius: 12,
+                      backgroundColor: "#fefefe",
+                      marginHorizontal: 10,
+                      marginVertical: 8,
+                      paddingVertical: 8,
                       shadowColor: "#000",
                       shadowOffset: { width: 0, height: 2 },
-                      shadowOpacity: 0.15,
-                      shadowRadius: 4,
+                      shadowOpacity: 0.1,
+                      shadowRadius: 5,
                       elevation: 3,
                     }}
-                  />
-                )}
-              />
+                  >
+                    <Text
+                      style={{
+                        color: value ? "#d2af84" : "#888",
+                        fontSize: 18,
+                      }}
+                    >
+                      {value ? `Guests: ${value}` : "Select number of guests"}
+                    </Text>
+                  </ModalSelector>
+                </View>
+              );
+            }}
+          />
 
-              {/* Character count or helpful text */}
-              <Text className="text-gray-400 text-xs mt-2">
-                Examples: Early check-in, late check-out, dietary restrictions,
-                celebration arrangements, etc.
-              </Text>
-            </View>
+          {errors.numGuests && (
+            <Text className="text-red-400 mb-4">This field is required.</Text>
+          )}
 
-            {/* Booking ID (Hidden) */}
+          {/* Breakfast Switch */}
+          <View className="flex-row justify-between items-center mb-6">
+            <Text className="text-white text-base">Include Breakfast</Text>
             <Controller
               control={control}
-              name="bookingId"
-              render={({ field: { value } }) => (
+              name="hasBreakfast"
+              render={({ field: { onChange, value } }) => (
+                <Switch
+                  value={value}
+                  onValueChange={onChange}
+                  trackColor={{ false: "#767577", true: "#d2af84" }}
+                  thumbColor={value ? "#fff" : "#f4f3f4"}
+                />
+              )}
+            />
+          </View>
+
+          {/* Special Requests Section */}
+          <View className="mb-6">
+            <View className="flex-row items-center mb-3">
+              <Feather name="message-square" size={18} color="#d2af84" />
+              <Text className="text-white text-base ml-2 font-semibold">
+                Special Requests
+              </Text>
+            </View>
+            <Text className="text-gray-300 text-sm mb-3">
+              Let us know about any special requirements or requests for your
+              stay
+            </Text>
+
+            <Controller
+              control={control}
+              name="observations"
+              render={({ field: { onChange, value } }) => (
                 <TextInput
                   value={value}
-                  editable={false}
-                  style={{ display: "none" }}
+                  onChangeText={onChange}
+                  placeholder="Enter your special requests here..."
+                  placeholderTextColor="#888"
+                  multiline={true}
+                  numberOfLines={4}
+                  textAlignVertical="top"
+                  style={{
+                    backgroundColor: "#2c2f38",
+                    borderRadius: 12,
+                    borderWidth: 1,
+                    borderColor: "#d2af84",
+                    paddingVertical: 12,
+                    paddingHorizontal: 16,
+                    color: "#fff",
+                    fontSize: 16,
+                    minHeight: 100,
+                    maxHeight: 150,
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.15,
+                    shadowRadius: 4,
+                    elevation: 3,
+                  }}
                 />
               )}
             />
 
-            {/* Submit Button */}
-            <TouchableOpacity
-              onPress={handleSubmit(onSubmit)}
-              disabled={isUpdating}
-              className="bg-[#d2af84] py-3 rounded-xl shadow-md mt-4"
-              style={{
-                shadowColor: "#d2af84",
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.3,
-                shadowRadius: 6,
-                elevation: 8,
-              }}
-            >
-              <Text className="text-center text-lg text-white font-bold">
-                {isUpdating ? "Updating..." : "Update Booking"}
-              </Text>
-            </TouchableOpacity>
-
-            {/* Error Message */}
-            {updateError && (
-              <View className="mt-4 p-3 rounded-lg bg-red-500/20 border border-red-500/30">
-                <Text className="text-red-300 text-center">
-                  Failed to update booking. Please try again.
-                </Text>
-              </View>
-            )}
+            {/* Character count or helpful text */}
+            <Text className="text-gray-400 text-xs mt-2">
+              Examples: Early check-in, late check-out, dietary restrictions,
+              celebration arrangements, etc.
+            </Text>
           </View>
-        </ScrollView>
-      </ImageBackground>
-    </View>
+
+          {/* Booking ID (Hidden) */}
+          <Controller
+            control={control}
+            name="bookingId"
+            render={({ field: { value } }) => (
+              <TextInput
+                value={value}
+                editable={false}
+                style={{ display: "none" }}
+              />
+            )}
+          />
+
+          {/* Submit Button */}
+          <TouchableOpacity
+            onPress={handleSubmit(onSubmit)}
+            disabled={isUpdating}
+            className="bg-[#d2af84] py-3 rounded-xl shadow-md mt-4"
+            style={{
+              shadowColor: "#d2af84",
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.3,
+              shadowRadius: 6,
+              elevation: 8,
+            }}
+          >
+            <Text className="text-center text-lg text-white font-bold">
+              {isUpdating ? "Updating..." : "Update Booking"}
+            </Text>
+          </TouchableOpacity>
+
+          {/* Error Message */}
+          {updateError && (
+            <View className="mt-4 p-3 rounded-lg bg-red-500/20 border border-red-500/30">
+              <Text className="text-red-300 text-center">
+                Failed to update booking. Please try again.
+              </Text>
+            </View>
+          )}
+        </View>
+      </ScrollView>
+    </>
   );
 };
 

@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { useUpdateSetting } from "@/hooks/useUpdateSetting";
+
 export default function UpdateSettingForm({ setting, onSubmit }) {
   const {
     control,
@@ -33,31 +34,33 @@ export default function UpdateSettingForm({ setting, onSubmit }) {
 
   return (
     <ScrollView contentContainerStyle={{ padding: 20 }}>
-      <View className="flex-1 justify-center items-center px-6 py-12">
-        <Text className="text-2xl font-bold mb-6 text-white">
-          Cập nhật cài đặt
+      <View className="flex-1 justify-center items-center px-6 py-8">
+        <Text className="text-2xl font-extrabold mb-6 text-[#d2af84] tracking-wide drop-shadow-lg">
+          Update Settings
         </Text>
 
         {/* Min Booking Length */}
         <View className="w-full mb-4">
-          <Text className="text-white mb-1">Thời gian đặt tối thiểu</Text>
+          <Text className="text-[#d2af84] mb-1 font-semibold">
+            Minimum Booking Length
+          </Text>
           <Controller
             control={control}
             name="minBookingLength"
-            rules={{ required: "Không được để trống" }}
+            rules={{ required: "This field is required" }}
             render={({ field }) => (
               <>
                 <TextInput
                   value={field.value?.toString()}
                   onBlur={field.onBlur}
                   onChangeText={(text) => field.onChange(Number(text))}
-                  placeholder="Min Booking Length"
-                  placeholderTextColor="#ddd"
+                  placeholder="Minimum Booking Length"
+                  placeholderTextColor="#bbb"
                   keyboardType="numeric"
-                  className="w-full border border-white rounded-md p-3 text-white"
+                  className="w-full border border-[#d2af84] rounded-lg p-3 text-white bg-black/40"
                 />
                 {errors.minBookingLength && (
-                  <Text className="text-red-500 text-sm mt-1">
+                  <Text className="text-red-400 text-xs mt-1">
                     {errors.minBookingLength.message}
                   </Text>
                 )}
@@ -68,24 +71,26 @@ export default function UpdateSettingForm({ setting, onSubmit }) {
 
         {/* Max Booking Length */}
         <View className="w-full mb-4">
-          <Text className="text-white mb-1">Thời gian đặt tối đa</Text>
+          <Text className="text-[#d2af84] mb-1 font-semibold">
+            Maximum Booking Length
+          </Text>
           <Controller
             control={control}
             name="maxBookingLength"
-            rules={{ required: "Không được để trống" }}
+            rules={{ required: "This field is required" }}
             render={({ field }) => (
               <>
                 <TextInput
                   value={field.value?.toString()}
                   onBlur={field.onBlur}
                   onChangeText={(text) => field.onChange(Number(text))}
-                  placeholder="Max Booking Length"
-                  placeholderTextColor="#ddd"
+                  placeholder="Maximum Booking Length"
+                  placeholderTextColor="#bbb"
                   keyboardType="numeric"
-                  className="w-full border border-white rounded-md p-3 text-white"
+                  className="w-full border border-[#d2af84] rounded-lg p-3 text-white bg-black/40"
                 />
                 {errors.maxBookingLength && (
-                  <Text className="text-red-500 text-sm mt-1">
+                  <Text className="text-red-400 text-xs mt-1">
                     {errors.maxBookingLength.message}
                   </Text>
                 )}
@@ -96,24 +101,26 @@ export default function UpdateSettingForm({ setting, onSubmit }) {
 
         {/* Max Number Of Guests */}
         <View className="w-full mb-4">
-          <Text className="text-white mb-1">Số lượng khách tối đa</Text>
+          <Text className="text-[#d2af84] mb-1 font-semibold">
+            Maximum Number of Guests
+          </Text>
           <Controller
             control={control}
             name="maxNumberOfGuests"
-            rules={{ required: "Không được để trống" }}
+            rules={{ required: "This field is required" }}
             render={({ field }) => (
               <>
                 <TextInput
                   value={field.value?.toString()}
                   onBlur={field.onBlur}
                   onChangeText={(text) => field.onChange(Number(text))}
-                  placeholder="Max Number Of Guests"
-                  placeholderTextColor="#ddd"
+                  placeholder="Maximum Number of Guests"
+                  placeholderTextColor="#bbb"
                   keyboardType="numeric"
-                  className="w-full border border-white rounded-md p-3 text-white"
+                  className="w-full border border-[#d2af84] rounded-lg p-3 text-white bg-black/40"
                 />
                 {errors.maxNumberOfGuests && (
-                  <Text className="text-red-500 text-sm mt-1">
+                  <Text className="text-red-400 text-xs mt-1">
                     {errors.maxNumberOfGuests.message}
                   </Text>
                 )}
@@ -124,11 +131,13 @@ export default function UpdateSettingForm({ setting, onSubmit }) {
 
         {/* Breakfast Price */}
         <View className="w-full mb-4">
-          <Text className="text-white mb-1">Giá bữa sáng</Text>
+          <Text className="text-[#d2af84] mb-1 font-semibold">
+            Breakfast Price
+          </Text>
           <Controller
             control={control}
             name="breakfastPrice"
-            rules={{ required: "Không được để trống" }}
+            rules={{ required: "This field is required" }}
             render={({ field }) => (
               <>
                 <TextInput
@@ -136,12 +145,12 @@ export default function UpdateSettingForm({ setting, onSubmit }) {
                   onBlur={field.onBlur}
                   onChangeText={(text) => field.onChange(Number(text))}
                   placeholder="Breakfast Price"
-                  placeholderTextColor="#ddd"
+                  placeholderTextColor="#bbb"
                   keyboardType="numeric"
-                  className="w-full border border-white rounded-md p-3 text-white"
+                  className="w-full border border-[#d2af84] rounded-lg p-3 text-white bg-black/40"
                 />
                 {errors.breakfastPrice && (
-                  <Text className="text-red-500 text-sm mt-1">
+                  <Text className="text-red-400 text-xs mt-1">
                     {errors.breakfastPrice.message}
                   </Text>
                 )}
@@ -152,11 +161,12 @@ export default function UpdateSettingForm({ setting, onSubmit }) {
 
         {/* Save Button */}
         <TouchableOpacity
-          className="w-full bg-[#d2af84] p-4 rounded-md mt-4"
+          className="w-full bg-[#d2af84] p-4 rounded-lg mt-4"
           onPress={handleSubmit(handleSave)}
+          disabled={isLoading}
         >
-          <Text className="text-center text-black font-semibold">
-            {isLoading ? "Đang lưu cài đặt" : "Lưu cài đặt"}
+          <Text className="text-center text-black font-bold text-base tracking-wide">
+            {isLoading ? "Saving..." : "Save Settings"}
           </Text>
         </TouchableOpacity>
       </View>
