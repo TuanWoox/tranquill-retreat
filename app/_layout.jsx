@@ -1,4 +1,4 @@
-// ./app/_layout.jsx  (or wherever your RootLayout lives)
+// ./app/_layout.jsx
 import { Stack } from "expo-router";
 import "../global.css";
 import { StatusBar } from "react-native";
@@ -12,42 +12,40 @@ export default function RootLayout() {
     <AuthProvider>
       <QueryClientProvider client={queryClient}>
         <StatusBar hidden={true} />
+
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="auth/login" options={{ headerShown: false }} />
-          <Stack.Screen name="auth/signup" options={{ headerShown: false }} />
-          <Stack.Screen name="auth/forgetPassword" options={{headerShown: false}} />
-          <Stack.Screen name="auth/resetPassword" options={{headerShown: false}} />
+
           <Stack.Screen
-            name="user/profile/index"
-            options={{ headerShown: false }}
+            name="auth"
+            options={{
+              headerShown: false,
+              presentation: "card",
+            }}
           />
           <Stack.Screen
-            name="user/profile/changePassword"
-            options={{ headerShown: false }}
+            name="user"
+            options={{
+              headerShown: false,
+              presentation: "card",
+            }}
           />
           <Stack.Screen
-            name="user/booking/index"
-            options={{ headerShown: false }}
+            name="admin"
+            options={{
+              headerShown: false,
+              presentation: "card",
+            }}
           />
           <Stack.Screen
-            name="user/booking/[id]/edit"
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="user/booking/[id]/index"
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="admin/settingAdjust"
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen name="cabins/create" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="cabins/[cabinId]"
-            options={{ headerShown: false }}
+            name="cabins"
+            options={{
+              headerShown: false,
+              presentation: "card",
+            }}
           />
         </Stack>
+
         <Toast />
       </QueryClientProvider>
     </AuthProvider>

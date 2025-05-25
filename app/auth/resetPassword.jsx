@@ -11,17 +11,17 @@ import { useRouter, useLocalSearchParams } from "expo-router";
 import useResetPassword from "../../hooks/useResetPassword";
 
 export default function ResetPassword() {
-  const { control, handleSubmit, watch, formState: { errors } } = useForm();
+  const {
+    control,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm();
   const [submitted, setSubmitted] = useState(false);
   const router = useRouter();
   const { email } = useLocalSearchParams();
-  const {
-    resetPassword,
-    isResetting,
-    isSuccess,
-    isError,
-    error,
-  } = useResetPassword();
+  const { resetPassword, isResetting, isSuccess, isError, error } =
+    useResetPassword();
 
   const onSubmit = (data) => {
     resetPassword(
@@ -38,25 +38,25 @@ export default function ResetPassword() {
   };
 
   return (
-    <ImageBackground
-      source={require("../../assets/images/aboutBackground.jpg")}
-      className="flex-1"
-      style={{ resizeMode: "cover" }}
-    >
-      <View className="absolute inset-0 bg-black opacity-50" />
+    <>
       <View className="flex-1 justify-center items-center px-6">
-        <Text className="text-2xl font-bold mb-6 text-white z-10">
-          Đặt lại mật khẩu
-        </Text>
-        <View className="w-full z-10">
+        <View className="w-full max-w-md bg-black/70 rounded-3xl p-8 shadow-2xl border border-white/10">
+          <View className="items-center mb-8">
+            <Text className="text-3xl font-extrabold text-white mt-3 mb-1 tracking-wide drop-shadow-lg">
+              Reset Password
+            </Text>
+            <Text className="text-amber-200 text-base italic text-center">
+              Enter your new password below.
+            </Text>
+          </View>
           <Controller
             control={control}
             name="password"
             rules={{
-              required: "Mật khẩu không được để trống",
+              required: "Password is required",
               minLength: {
                 value: 6,
-                message: "Mật khẩu phải có ít nhất 6 ký tự",
+                message: "Password must be at least 6 characters",
               },
             }}
             render={({ field }) => (
@@ -65,13 +65,13 @@ export default function ResetPassword() {
                   value={field.value}
                   onBlur={field.onBlur}
                   onChangeText={field.onChange}
-                  placeholder="Mật khẩu mới"
-                  placeholderTextColor="#ddd"
+                  placeholder="New Password"
+                  placeholderTextColor="#bbb"
                   secureTextEntry
-                  className="w-full border border-white rounded-md p-3 mb-4 text-white"
+                  className="w-full border border-[#d2af84] rounded-lg p-3 mb-2 text-white bg-black/40"
                 />
                 {errors.password && (
-                  <Text className="text-red-500 text-sm mb-2">
+                  <Text className="text-red-400 text-xs mb-2">
                     {errors.password.message}
                   </Text>
                 )}
@@ -82,9 +82,9 @@ export default function ResetPassword() {
             control={control}
             name="confirmPassword"
             rules={{
-              required: "Vui lòng nhập lại mật khẩu",
-              validate: value =>
-                value === watch("password") || "Mật khẩu không khớp",
+              required: "Please confirm your password",
+              validate: (value) =>
+                value === watch("password") || "Passwords do not match",
             }}
             render={({ field }) => (
               <>
@@ -92,13 +92,13 @@ export default function ResetPassword() {
                   value={field.value}
                   onBlur={field.onBlur}
                   onChangeText={field.onChange}
-                  placeholder="Nhập lại mật khẩu"
-                  placeholderTextColor="#ddd"
+                  placeholder="Confirm Password"
+                  placeholderTextColor="#bbb"
                   secureTextEntry
-                  className="w-full border border-white rounded-md p-3 mb-4 text-white"
+                  className="w-full border border-[#d2af84] rounded-lg p-3 mb-2 text-white bg-black/40"
                 />
                 {errors.confirmPassword && (
-                  <Text className="text-red-500 text-sm mb-2">
+                  <Text className="text-red-400 text-xs mb-2">
                     {errors.confirmPassword.message}
                   </Text>
                 )}
@@ -106,24 +106,34 @@ export default function ResetPassword() {
             )}
           />
           <TouchableOpacity
-            className="w-full bg-[#d2af84] p-4 rounded-md mb-4"
+            className="w-full bg-[#d2af84] p-4 rounded-lg mt-4"
             onPress={handleSubmit(onSubmit)}
             disabled={isResetting || submitted}
           >
-            <Text className="text-center text-black font-semibold">
-              {isResetting ? "Đang xử lý..." : "Đặt lại mật khẩu"}
+            <Text className="text-center text-black font-bold text-base tracking-wide">
+              {isResetting ? "Processing..." : "Reset Password"}
             </Text>
           </TouchableOpacity>
           {isError && error?.message && (
-            <Text className="text-red-500 text-center mb-2">{error.message}</Text>
-          )}
-          {isSuccess && submitted && (
-            <Text className="text-green-500 text-center mb-2">
-              Đặt lại mật khẩu thành công! Đang chuyển hướng...
+            <Text className="text-red-400 text-center mb-2">
+              {error.message}
             </Text>
           )}
+          {isSuccess && submitted && (
+            <Text className="text-green-400 text-center mb-2">
+              Password reset successful! Redirecting...
+            </Text>
+          )}
+          <TouchableOpacity
+            className="mt-6"
+            onPress={() => router.replace("/auth/login")}
+          >
+            <Text className="text-center text-amber-200 underline text-base">
+              ← Back to Log In
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
-    </ImageBackground>
+    </>
   );
 }

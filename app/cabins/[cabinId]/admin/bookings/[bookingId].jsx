@@ -28,6 +28,7 @@ import FinSummarySection from "@/components/FinSummarySection";
 import GuestInfoSection from "@/components/GuestInfoSection";
 import HeaderSection from "@/components/HeaderSection";
 import ActionSection from "@/components/ActionSection";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const IMAGE_URL = process.env.EXPO_PUBLIC_BACKEND_URL_IMAGE;
 
@@ -143,58 +144,64 @@ export default function AdminDetailsBooking() {
 
   return (
     <>
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ padding: 20, paddingBottom: 40 }}
-      >
-        {/* Admin Header Section */}
-        <HeaderSection
-          bookingId={bookingId}
-          statusColor={statusColor}
-          bookingStatus={bookingStatus}
-        />
+      <SafeAreaView className="flex-1 ">
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ padding: 20, paddingBottom: 40 }}
+        >
+          {/* Admin Header Section */}
+          <HeaderSection
+            bookingId={bookingId}
+            statusColor={statusColor}
+            bookingStatus={bookingStatus}
+          />
 
-        {/* Cabin Info Card */}
-        <CabinHeroBooking cabin={cabin} />
-        {/* Date & Duration Card */}
-        <StayDurationSection
-          startDate={startDate}
-          endDate={endDate}
-          numDates={numDates}
-        />
-        {/* Guest & Services Card */}
-        <GuestServiceSection
-          numGuests={numGuests}
-          hasBreakfast={hasBreakfast}
-        />
-        {/* Special Requests Card */}
-        <SpecialRequestSection observations={observations} />
-        {/* Financial Summary Card */}
-        <FinSummarySection
-          numDates={numDates}
-          cabinPrice={cabinPrice}
-          extrasPrice={extrasPrice}
-          totalPrice={totalPrice}
-          createdAt={createdAt}
-          isPaid={isPaid}
-        />
-        {/* Guest Information Card */}
-        <GuestInfoSection user={user} />
+          {/* Cabin Info Card */}
+          <CabinHeroBooking cabin={cabin} />
+          {/* Date & Duration Card */}
+          <StayDurationSection
+            startDate={startDate}
+            endDate={endDate}
+            numDates={numDates}
+          />
+          {/* Guest & Services Card */}
+          <GuestServiceSection
+            numGuests={numGuests}
+            hasBreakfast={hasBreakfast}
+          />
+          {/* Special Requests Card */}
+          <SpecialRequestSection observations={observations} />
+          {/* Financial Summary Card */}
+          <FinSummarySection
+            numDates={numDates}
+            cabinPrice={cabinPrice}
+            extrasPrice={extrasPrice}
+            totalPrice={totalPrice}
+            createdAt={createdAt}
+            isPaid={isPaid}
+          />
+          {/* Guest Information Card */}
+          <GuestInfoSection user={user} />
 
-        {/* Quick Status Update Buttons */}
-        <ActionSection
-          onUpdateStatus={onUpdateStatus}
-          bookingStatus={bookingStatus}
-        />
-        <View className="mt-4 items-center">
-          <TouchableOpacity
-            className="bg-[#d2af84] px-6 py-3 rounded-full"
-            onPress={() => router.back()}
-          >
-            <Text className="text-[#23272f] font-bold text-base">← Back</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+          {/* Quick Status Update Buttons */}
+          <ActionSection
+            onUpdateStatus={onUpdateStatus}
+            bookingStatus={bookingStatus}
+          />
+          <View className="mt-8 items-center">
+            <TouchableOpacity
+              className="flex-row items-center bg-[#d2af84]/90 px-6 py-3 rounded-full shadow-lg"
+              onPress={() => router.back()}
+              activeOpacity={0.85}
+            >
+              <AntDesign name="arrowleft" size={20} color="#181b20" />
+              <Text className="text-[#181b20] font-bold text-base ml-2">
+                Back to Bookings
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
     </>
   );
 }
