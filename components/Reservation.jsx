@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   TextInput,
   TouchableOpacity,
@@ -20,18 +19,17 @@ import Toast from "react-native-toast-message";
 import { useCreateBooking } from "@/hooks/useCreateBooking";
 import { LinearGradient } from "expo-linear-gradient";
 
-const { width } = Dimensions.get("window");
-
 export default function Reservation({ cabin, settings }) {
   const router = useRouter();
   const { user, isAuthenticated } = useAuthContext();
-  const { createBookingFn, isLoading: isSubmitting } = useCreateBooking();
 
   const [dateRange, setDateRange] = useState({ from: null, to: null });
   const [numGuests, setNumGuests] = useState(1);
   const [hasBreakfast, setHasBreakfast] = useState(false);
   const [observations, setObservations] = useState("");
   const [showGuestModal, setShowGuestModal] = useState(false);
+
+  const { createBookingFn, isLoading: isSubmitting } = useCreateBooking();
 
   const handleDateChange = (newRange) => {
     setDateRange(newRange);
@@ -64,21 +62,21 @@ export default function Reservation({ cabin, settings }) {
       return;
     }
 
-    const numNights = differenceInDays(dateRange.to, dateRange.from);
+    const numDates = differenceInDays(dateRange.to, dateRange.from);
     const cabinPrice = cabin?.discount
       ? cabin?.regularPrice - cabin?.discount
       : cabin?.regularPrice || 0;
 
     const extrasPrice =
       hasBreakfast && settings?.breakfastPrice
-        ? settings.breakfastPrice * numGuests * numNights
+        ? settings.breakfastPrice * numGuests * numDates
         : 0;
 
     const bookingData = {
       startDate: dateRange.from,
       endDate: dateRange.to,
       numGuests,
-      cabinPrice: cabinPrice * numNights,
+      cabinPrice: cabinPrice * numDates,
       extrasPrice,
       hasBreakfast,
       observations,
@@ -90,18 +88,17 @@ export default function Reservation({ cabin, settings }) {
 
   if (!isAuthenticated) {
     return (
-      <LinearGradient
-        colors={["#1E293B", "#0F172A"]}
-        style={styles.gradientContainer}
-      >
+      <LinearGradient colors={["#1E293B", "#0F172A"]} className="flex-1">
         <StatusBar barStyle="light-content" />
-        <View style={styles.centeredContainer}>
+        <View className="flex-1 justify-center items-center p-5">
           <Ionicons name="log-in-outline" size={60} color="#FBBF24" />
-          <Text style={styles.authTitle}>Authentication Required</Text>
-          <Text style={styles.messageText}>
+          <Text className="text-white text-2xl font-bold mt-4 mb-2">
+            Authentication Required
+          </Text>
+          <Text className="text-gray-300 text-base text-center leading-6">
             Please{" "}
             <Text
-              style={styles.linkText}
+              className="text-amber-400 underline"
               onPress={() => router.push("/auth/login")}
             >
               login
@@ -109,10 +106,12 @@ export default function Reservation({ cabin, settings }) {
             to reserve this cabin
           </Text>
           <TouchableOpacity
-            style={styles.loginButton}
+            className="bg-amber-400/20 border border-amber-400 py-3 px-6 rounded-xl mt-6"
             onPress={() => router.push("/auth/login")}
           >
-            <Text style={styles.loginButtonText}>Go to Login</Text>
+            <Text className="text-amber-400 text-base font-semibold">
+              Go to Login
+            </Text>
           </TouchableOpacity>
         </View>
       </LinearGradient>
@@ -121,50 +120,46 @@ export default function Reservation({ cabin, settings }) {
 
   const { from, to } = dateRange;
   const displayName = user?.fullName || "Visitor";
-  const numNights = from && to ? differenceInDays(to, from) : 0;
+  const numDates = from && to ? differenceInDays(to, from) : 0;
   const totalCabinPrice =
-    numNights * (cabin?.regularPrice - (cabin?.discount || 0));
+    numDates * (cabin?.regularPrice - (cabin?.discount || 0));
   const totalBreakfastPrice =
     hasBreakfast && settings?.breakfastPrice
-      ? settings.breakfastPrice * numGuests * numNights
+      ? settings.breakfastPrice * numGuests * numDates
       : 0;
   const totalPrice = totalCabinPrice + totalBreakfastPrice;
 
   const maxGuests = cabin?.maxCapacity || settings?.maxNumberOfGuests || 8;
 
   return (
-    <LinearGradient
-      colors={["#1E293B", "#0F172A"]}
-      style={styles.gradientContainer}
-    >
+    <LinearGradient colors={["#1E293B", "#0F172A"]} className="flex-1">
       <StatusBar barStyle="light-content" />
-      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* User Header With Card Effect */}
-        <View style={styles.userHeaderCard}>
+        <View className="mx-4 mt-4 rounded-2xl overflow-hidden shadow-lg">
           <LinearGradient
             colors={["#334155", "#1E293B"]}
-            style={styles.userHeaderGradient}
+            className="flex-row justify-between items-center p-4 rounded-2xl"
           >
-            <View style={styles.userInfo}>
-              <Text style={styles.welcomeText}>Welcome back</Text>
-              <Text style={styles.username}>{displayName}</Text>
-            </View>
-            <View style={styles.userAvatarContainer}>
-              <View style={styles.userAvatar}>
-                <Ionicons name="person" size={24} color="#FBBF24" />
-              </View>
+            <View className="flex-col p-4">
+              <Text className="text-slate-400 text-sm mb-1">Welcome </Text>
+              <Text className="text-amber-400 text-xl font-bold">
+                {displayName}
+              </Text>
             </View>
           </LinearGradient>
         </View>
 
         {/* Cabin Card Preview */}
         {cabin && (
-          <View style={styles.cabinPreviewCard}>
-            <View style={styles.cabinHeader}>
-              <Text style={styles.cabinName}>{cabin.name}</Text>
-              <View style={styles.cabinDetailsBadge}>
+          <View className="mx-4 mt-4 bg-slate-600 rounded-2xl p-4 shadow-md">
+            <View className="flex-col gap-2">
+              <Text className="text-white text-lg font-semibold">
+                {cabin.name}
+              </Text>
+              <View className="flex-row items-center bg-black/20 px-2 py-1 rounded-xl self-start gap-1.5">
                 <Ionicons name="bed-outline" size={14} color="#E5E7EB" />
-                <Text style={styles.cabinDetailsText}>
+                <Text className="text-gray-300 text-xs">
                   Max {cabin.maxCapacity} guests
                 </Text>
               </View>
@@ -188,32 +183,38 @@ export default function Reservation({ cabin, settings }) {
         />
 
         {/* Guest Details Section */}
-        <View style={styles.sectionContainer}>
-          <View style={styles.sectionHeaderRow}>
+        <View className="mx-4 mt-6 bg-slate-600 rounded-2xl p-4 shadow-sm">
+          <View className="flex-row items-center mb-4 gap-2">
             <FontAwesome5 name="users" size={18} color="#FBBF24" />
-            <Text style={styles.sectionTitle}>Guest Details</Text>
+            <Text className="text-white text-lg font-semibold">
+              Guest Details
+            </Text>
           </View>
 
-          <View style={styles.formItem}>
-            <Text style={styles.formLabel}>Number of Guests</Text>
+          <View className="mb-4">
+            <Text className="text-gray-300 text-base mb-2">
+              Number of Guests
+            </Text>
             <TouchableOpacity
-              style={styles.guestPickerButton}
+              className="bg-slate-800 rounded-xl p-4 flex-row justify-between items-center border border-white/10"
               onPress={() => setShowGuestModal(true)}
             >
-              <Text style={styles.guestPickerText}>
+              <Text className="text-gray-300 text-base">
                 {numGuests} {numGuests === 1 ? "guest" : "guests"}
               </Text>
               <Ionicons name="chevron-down" size={20} color="#E5E7EB" />
             </TouchableOpacity>
           </View>
 
-          <View style={styles.formItem}>
-            <View style={styles.switchContainer}>
+          <View className="mb-4">
+            <View className="flex-row items-center justify-between">
               <View>
-                <Text style={styles.formLabel}>Include breakfast</Text>
+                <Text className="text-gray-300 text-base">
+                  Include breakfast
+                </Text>
                 {settings?.breakfastPrice && (
-                  <Text style={styles.breakfastNote}>
-                    ${settings.breakfastPrice} per person/night
+                  <Text className="text-slate-400 text-xs">
+                    ${settings.breakfastPrice} per person/date
                   </Text>
                 )}
               </View>
@@ -229,55 +230,62 @@ export default function Reservation({ cabin, settings }) {
         </View>
 
         {/* Special Requests Section */}
-        <View style={styles.sectionContainer}>
-          <View style={styles.sectionHeaderRow}>
+        <View className="mx-4 mt-6 bg-slate-600 rounded-2xl p-4 shadow-sm">
+          <View className="flex-row items-center mb-4 gap-2">
             <MaterialIcons name="note-add" size={20} color="#FBBF24" />
-            <Text style={styles.sectionTitle}>Special Requests</Text>
+            <Text className="text-white text-lg font-semibold">
+              Special Requests
+            </Text>
           </View>
 
           <TextInput
-            style={styles.textArea}
+            className="bg-slate-800 rounded-xl p-4 text-gray-300 text-base h-30 border border-white/10"
             placeholder="Any special requests, allergies, etc."
             placeholderTextColor="#94A3B8"
             value={observations}
             onChangeText={setObservations}
             multiline={true}
             numberOfLines={4}
+            style={{ textAlignVertical: "top" }}
           />
         </View>
 
         {/* Price Summary Section */}
         {from && to && (
-          <View style={styles.priceSummaryCard}>
-            <Text style={styles.summaryTitle}>Price Summary</Text>
+          <View className="mx-4 mt-6 bg-slate-600 rounded-2xl p-4">
+            <Text className="text-white text-lg font-semibold mb-4">
+              Price Summary
+            </Text>
 
-            <View style={styles.summaryRow}>
-              <Text style={styles.summaryText}>
-                {numNights} {numNights === 1 ? "night" : "nights"} × $
+            <View className="flex-row justify-between mb-3">
+              <Text className="text-gray-300 text-sm">
+                {numDates} {numDates === 1 ? "date" : "dates"} × $
                 {(cabin?.regularPrice - (cabin?.discount || 0)).toFixed(2)}
               </Text>
-              <Text style={styles.summaryPrice}>
+              <Text className="text-gray-300 text-sm font-medium">
                 ${totalCabinPrice.toFixed(2)}
               </Text>
             </View>
 
             {hasBreakfast && settings?.breakfastPrice && (
-              <View style={styles.summaryRow}>
-                <Text style={styles.summaryText}>
+              <View className="flex-row justify-between mb-3">
+                <Text className="text-gray-300 text-sm">
                   Breakfast ({numGuests} {numGuests === 1 ? "guest" : "guests"}{" "}
-                  × {numNights} {numNights === 1 ? "night" : "nights"})
+                  × {numDates} {numDates === 1 ? "date" : "dates"})
                 </Text>
-                <Text style={styles.summaryPrice}>
+                <Text className="text-gray-300 text-sm font-medium">
                   ${totalBreakfastPrice.toFixed(2)}
                 </Text>
               </View>
             )}
 
-            <View style={styles.divider} />
+            <View className="h-px bg-white/10 my-3" />
 
-            <View style={styles.totalRow}>
-              <Text style={styles.totalText}>Total</Text>
-              <Text style={styles.totalPrice}>${totalPrice.toFixed(2)}</Text>
+            <View className="flex-row justify-between mt-1">
+              <Text className="text-white text-base font-semibold">Total</Text>
+              <Text className="text-green-500 text-lg font-bold">
+                ${totalPrice.toFixed(2)}
+              </Text>
             </View>
           </View>
         )}
@@ -285,27 +293,32 @@ export default function Reservation({ cabin, settings }) {
         {/* Reserve Button */}
         {from && to ? (
           <TouchableOpacity
-            style={styles.reserveButton}
+            className="mx-4 mt-8 rounded-3xl overflow-hidden shadow-lg shadow-[#FBBF24]/40 elevation-8 "
             onPress={handleCreateBooking}
             disabled={isSubmitting}
+            activeOpacity={0.9}
           >
             <LinearGradient
               colors={
-                isSubmitting ? ["#D97706", "#F59E0B"] : ["#F59E0B", "#FBBF24"]
+                isSubmitting
+                  ? ["#D97706", "#F59E0B", "#FBBF24"]
+                  : ["#F59E0B", "#FBBF24", "#FCD34D"]
               }
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              style={styles.reserveButtonGradient}
+              className="py-10 px-8 items-center justify-center min-h-[64px]"
             >
               {isSubmitting ? (
-                <View style={styles.loadingContainer}>
-                  <Ionicons name="hourglass-outline" size={18} color="#FFF" />
-                  <Text style={styles.reserveButtonText}>Processing...</Text>
+                <View className="flex-row items-center justify-center space-x-3">
+                  <Ionicons name="hourglass-outline" size={22} color="#FFF" />
+                  <Text className="text-white text-lg font-extrabold tracking-wide">
+                    Processing Reservation...
+                  </Text>
                 </View>
               ) : (
-                <View style={styles.reserveButtonContent}>
-                  <Ionicons name="checkmark-circle" size={18} color="#FFF" />
-                  <Text style={styles.reserveButtonText}>
+                <View className="flex-row items-center justify-center space-x-3 ">
+                  <Ionicons name="checkmark-circle" size={22} color="#FFF" />
+                  <Text className="text-white text-lg font-extrabold tracking-wide">
                     Complete Reservation
                   </Text>
                 </View>
@@ -313,14 +326,18 @@ export default function Reservation({ cabin, settings }) {
             </LinearGradient>
           </TouchableOpacity>
         ) : (
-          <View style={styles.startHintContainer}>
-            <Ionicons name="calendar-outline" size={24} color="#FBBF24" />
-            <Text style={styles.startHint}>Start by selecting your dates</Text>
+          <View className="mx-4 mt-8 flex-row items-center justify-center space-x-3 bg-gradient-to-r from-[#FBBF24]/15 via-[#FBBF24]/10 to-[#FBBF24]/15 py-6 px-8 rounded-3xl border-2 border-[#FBBF24]/40 border-dashed shadow-lg shadow-[#FBBF24]/20 min-h-[64px]">
+            <View className="p-2 bg-[#FBBF24]/20 rounded-full">
+              <Ionicons name="calendar-outline" size={28} color="#FBBF24" />
+            </View>
+            <Text className="text-[#FBBF24] text-lg font-bold tracking-wide">
+              Start by selecting your dates
+            </Text>
           </View>
         )}
 
         {/* Bottom Padding */}
-        <View style={{ height: 40 }} />
+        <View className="h-10" />
       </ScrollView>
 
       {/* Guest Selection Modal */}
@@ -330,34 +347,35 @@ export default function Reservation({ cabin, settings }) {
         animationType="fade"
         onRequestClose={() => setShowGuestModal(false)}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
+        <View className="flex-1 bg-black/70 justify-center items-center p-5">
+          <View className="w-full max-w-sm rounded-2xl overflow-hidden">
             <LinearGradient
               colors={["#334155", "#1E293B"]}
-              style={styles.modalContent}
+              className="max-h-96"
             >
-              <View style={styles.modalHeader}>
-                <Text style={styles.modalTitle}>Select Number of Guests</Text>
+              <View className="flex-row justify-between items-center p-5 border-b border-white/10">
+                <Text className="text-white text-lg font-semibold">
+                  Select Number of Guests
+                </Text>
                 <TouchableOpacity
                   onPress={() => setShowGuestModal(false)}
-                  style={styles.closeButton}
+                  className="p-1"
                 >
                   <Ionicons name="close" size={24} color="#E5E7EB" />
                 </TouchableOpacity>
               </View>
 
-              <ScrollView style={styles.guestOptionsContainer}>
+              <ScrollView className="max-h-72">
                 {Array.from({ length: maxGuests }, (_, i) => i + 1).map(
                   (guestCount) => (
                     <TouchableOpacity
                       key={guestCount}
-                      style={[
-                        styles.guestOption,
-                        numGuests === guestCount && styles.selectedGuestOption,
-                      ]}
+                      className={`flex-row justify-between items-center p-4 border-b border-white/10 ${
+                        numGuests === guestCount ? "bg-amber-400/10" : ""
+                      }`}
                       onPress={() => handleGuestSelect(guestCount)}
                     >
-                      <View style={styles.guestOptionContent}>
+                      <View className="flex-row items-center gap-3">
                         <FontAwesome5
                           name="users"
                           size={16}
@@ -366,11 +384,11 @@ export default function Reservation({ cabin, settings }) {
                           }
                         />
                         <Text
-                          style={[
-                            styles.guestOptionText,
-                            numGuests === guestCount &&
-                              styles.selectedGuestOptionText,
-                          ]}
+                          className={`text-base ${
+                            numGuests === guestCount
+                              ? "text-amber-400 font-semibold"
+                              : "text-gray-300"
+                          }`}
                         >
                           {guestCount} {guestCount === 1 ? "Guest" : "Guests"}
                         </Text>
@@ -393,352 +411,3 @@ export default function Reservation({ cabin, settings }) {
     </LinearGradient>
   );
 }
-
-const styles = StyleSheet.create({
-  gradientContainer: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-  },
-  userHeaderCard: {
-    marginHorizontal: 16,
-    marginTop: 16,
-    borderRadius: 16,
-    overflow: "hidden",
-    elevation: 4,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
-  },
-  userHeaderGradient: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 16,
-    borderRadius: 16,
-  },
-  userInfo: {
-    flexDirection: "column",
-  },
-  welcomeText: {
-    color: "#94A3B8",
-    fontSize: 14,
-    marginBottom: 4,
-  },
-  username: {
-    color: "#FBBF24",
-    fontSize: 20,
-    fontWeight: "700",
-  },
-  userAvatarContainer: {
-    shadowColor: "#FBBF24",
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-  },
-  userAvatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: "rgba(251,191,36,0.2)",
-    justifyContent: "center",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "rgba(251,191,36,0.3)",
-  },
-  cabinPreviewCard: {
-    marginHorizontal: 16,
-    marginTop: 16,
-    backgroundColor: "#334155",
-    borderRadius: 16,
-    padding: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 3,
-  },
-  cabinHeader: {
-    flexDirection: "column",
-    gap: 8,
-  },
-  cabinName: {
-    color: "#FFF",
-    fontSize: 18,
-    fontWeight: "600",
-  },
-  cabinDetailsBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.2)",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-    alignSelf: "flex-start",
-    gap: 6,
-  },
-  cabinDetailsText: {
-    color: "#E5E7EB",
-    fontSize: 12,
-  },
-  sectionContainer: {
-    marginHorizontal: 16,
-    marginTop: 24,
-    backgroundColor: "#334155",
-    borderRadius: 16,
-    padding: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 2,
-  },
-  sectionHeaderRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 16,
-    gap: 8,
-  },
-  sectionTitle: {
-    color: "#FFF",
-    fontSize: 18,
-    fontWeight: "600",
-  },
-  formItem: {
-    marginBottom: 16,
-  },
-  formLabel: {
-    color: "#E5E7EB",
-    fontSize: 16,
-    marginBottom: 8,
-  },
-  guestPickerButton: {
-    backgroundColor: "#1E293B",
-    borderRadius: 12,
-    padding: 16,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.1)",
-  },
-  guestPickerText: {
-    color: "#E5E7EB",
-    fontSize: 16,
-  },
-  switchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  breakfastNote: {
-    color: "#94A3B8",
-    fontSize: 13,
-  },
-  textArea: {
-    backgroundColor: "#1E293B",
-    borderRadius: 12,
-    padding: 16,
-    color: "#E5E7EB",
-    fontSize: 16,
-    height: 120,
-    textAlignVertical: "top",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.1)",
-  },
-  priceSummaryCard: {
-    marginHorizontal: 16,
-    marginTop: 24,
-    backgroundColor: "#334155",
-    borderRadius: 16,
-    padding: 16,
-  },
-  summaryTitle: {
-    color: "#FFF",
-    fontSize: 18,
-    fontWeight: "600",
-    marginBottom: 16,
-  },
-  summaryRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 12,
-  },
-  summaryText: {
-    color: "#E5E7EB",
-    fontSize: 14,
-  },
-  summaryPrice: {
-    color: "#E5E7EB",
-    fontSize: 14,
-    fontWeight: "500",
-  },
-  divider: {
-    height: 1,
-    backgroundColor: "rgba(255,255,255,0.1)",
-    marginVertical: 12,
-  },
-  totalRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 4,
-  },
-  totalText: {
-    color: "#FFF",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  totalPrice: {
-    color: "#10B981",
-    fontSize: 18,
-    fontWeight: "700",
-  },
-  reserveButton: {
-    marginHorizontal: 16,
-    marginTop: 24,
-    borderRadius: 16,
-    overflow: "hidden",
-    elevation: 4,
-    shadowColor: "#FBBF24",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-  },
-  reserveButtonGradient: {
-    paddingVertical: 16,
-    alignItems: "center",
-  },
-  reserveButtonContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  loadingContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  reserveButtonText: {
-    color: "#FFF",
-    fontSize: 16,
-    fontWeight: "700",
-  },
-  startHintContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    backgroundColor: "rgba(251,191,36,0.1)",
-    marginHorizontal: 16,
-    marginTop: 24,
-    paddingVertical: 16,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "rgba(251,191,36,0.3)",
-    borderStyle: "dashed",
-  },
-  startHint: {
-    color: "#FBBF24",
-    fontSize: 16,
-    fontWeight: "500",
-  },
-  centeredContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
-  authTitle: {
-    color: "#FFF",
-    fontSize: 22,
-    fontWeight: "700",
-    marginTop: 16,
-    marginBottom: 8,
-  },
-  messageText: {
-    color: "#E5E7EB",
-    fontSize: 16,
-    textAlign: "center",
-    lineHeight: 24,
-  },
-  linkText: {
-    color: "#FBBF24",
-    textDecorationLine: "underline",
-  },
-  loginButton: {
-    backgroundColor: "rgba(251,191,36,0.2)",
-    borderWidth: 1,
-    borderColor: "#FBBF24",
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 12,
-    marginTop: 24,
-  },
-  loginButtonText: {
-    color: "#FBBF24",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  // Modal Styles
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
-  modalContainer: {
-    width: "100%",
-    maxWidth: 400,
-    borderRadius: 20,
-    overflow: "hidden",
-  },
-  modalContent: {
-    maxHeight: 500,
-  },
-  modalHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: "rgba(255,255,255,0.1)",
-  },
-  modalTitle: {
-    color: "#FFF",
-    fontSize: 18,
-    fontWeight: "600",
-  },
-  closeButton: {
-    padding: 4,
-  },
-  guestOptionsContainer: {
-    maxHeight: 300,
-  },
-  guestOption: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "rgba(255,255,255,0.1)",
-  },
-  selectedGuestOption: {
-    backgroundColor: "rgba(251,191,36,0.1)",
-  },
-  guestOptionContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  guestOptionText: {
-    color: "#E5E7EB",
-    fontSize: 16,
-  },
-  selectedGuestOptionText: {
-    color: "#FBBF24",
-    fontWeight: "600",
-  },
-});

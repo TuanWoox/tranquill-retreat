@@ -1,88 +1,48 @@
 import React from "react";
-import { ScrollView, View, Text, StyleSheet } from "react-native";
+import { ScrollView, View, Text } from "react-native";
 import { useLocalSearchParams } from "expo-router";
-import Cabin from "@/components/Cabin";
+import Cabin from "@/components/CabinHero";
 import Reservation from "@/components/Reservation";
 import CabinSpinner from "@/components/CabinSpinner";
 import { useGetSetting } from "@/hooks/useGetSetting";
 import Spinner from "@/components/Spinner";
+import { useGetOneCabin } from "@/hooks/useGetOneCabin";
+import CabinDetails from "@/components/CabinDetails";
 
 export default function CabinDetailPage() {
-  const { cabinData, cabinId } = useLocalSearchParams();
+  const { cabinId } = useLocalSearchParams();
 
-  if (!cabinData && !cabinId) {
-    return (
-      <View style={styles.center}>
-        <Text style={styles.errorText}>No cabin data provided.</Text>
-      </View>
-    );
-  }
+  const {
+    data: cabin,
+    isLoading: isGettingCabin,
+    error: getError,
+  } = useGetOneCabin(cabinId);
 
-  let cabin;
-  try {
-    if (cabinData) {
-      cabin = JSON.parse(cabinData);
-    } else if (cabinId) {
-      // In a real app, you would fetch the cabin data here
-      return <CabinSpinner />;
-    }
-  } catch (error) {
+  const {
+    data: settings,
+    isLoading: isLoadingSettings,
+    error,
+  } = useGetSetting();
+
+  const isLoading = isGettingCabin || isLoadingSettings;
+  // Show error if cabin fetch failed or cabin not found
+  if (getError || (!cabin && !isGettingCabin)) {
     return (
-      <View style={styles.center}>
-        <Text style={styles.errorText}>
-          Invalid cabin data: {error.message}
+      <View className="flex-1 justify-center items-center px-5">
+        <Text className="text-red-500 text-base text-center">
+          {getError ? getError.message : "Cabin not found."}
         </Text>
       </View>
     );
   }
 
-  // Mock settings for UI demonstration
-
-  const { data: settings, isLoading, error } = useGetSetting();
-
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* Render cabin details */}
-      <Cabin cabin={cabin} />
-
-      <Text style={styles.header}>
-        Reserve {cabin?.name || "this cabin"} today. Pay on arrival.
-      </Text>
-      {/* Render reservation component with settings */}
+    <>
       {isLoading ? (
         <Spinner />
       ) : (
-        <Reservation cabin={cabin} settings={settings} />
+        <CabinDetails cabin={cabin} settings={settings} />
       )}
-    </ScrollView>
+    </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "transparent",
-  },
-  content: {
-    padding: 16,
-    paddingBottom: 100,
-  },
-  center: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 20,
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: "bold",
-    textAlign: "center",
-    color: "#d2af84",
-    marginVertical: 16,
-  },
-  errorText: {
-    color: "#ff6b6b",
-    fontSize: 16,
-    textAlign: "center",
-  },
-});
