@@ -33,7 +33,7 @@ export default function CabinRouteLayout() {
           <TouchableOpacity style={styles.backButton} onPress={handleBack}>
             <Ionicons name="arrow-back" size={24} color="#FBBF24" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Cabin Details</Text>
+          <Text style={styles.headerTitle}>Details</Text>
         </BlurView>
         <View style={styles.errorContainer}>
           <Ionicons
@@ -73,7 +73,7 @@ export default function CabinRouteLayout() {
         <TouchableOpacity style={styles.backButton} onPress={handleBack}>
           <Ionicons name="arrow-back" size={24} color="#FBBF24" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Cabin Details</Text>
+        <Text style={styles.headerTitle}>Details</Text>
       </BlurView>
       <View style={styles.content}>
         <Slot />

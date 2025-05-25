@@ -13,7 +13,7 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import { useForm, Controller } from "react-hook-form";
 import { useRouter, useLocalSearchParams } from "expo-router";
-import { AntDesign } from "@expo/vector-icons";
+
 import Spinner from "@/components/Spinner";
 import { useGetOneCabin } from "@/hooks/useGetOneCabin";
 import { useUpdateCabin } from "@/hooks/useUpdateCabin";
