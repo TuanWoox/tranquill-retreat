@@ -26,8 +26,9 @@ export default function User() {
     <ImageBackground
       source={require("../../assets/images/aboutBackground.jpg")}
       className="flex-1"
+      blurRadius={3}
     >
-      <SafeAreaView className="absolute inset-0 bg-black opacity-20" />
+      <View className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-black/90" />
       {Content}
     </ImageBackground>
   );

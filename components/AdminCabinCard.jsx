@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, TouchableOpacity, Image, Alert } from "react-native";
-import { FontAwesome } from "@expo/vector-icons";
+import { FontAwesome, Feather } from "@expo/vector-icons";
 import { useDeleteCabin } from "@/hooks/useDeleteCabin";
 import { useDuplicateCabin } from "@/hooks/useDuplicateCabin";
 import { useRouter } from "expo-router";
@@ -17,7 +17,7 @@ const AdminCabinCard = ({ cabin, onDelete, onEdit }) => {
   } = useDuplicateCabin();
 
   const handleDelete = () => {
-    Alert.alert("Xóa Cabin", `Bạn chắc chắn muốn xóa ${name}?`, [
+    Alert.alert("Delete Cabin", `Are you sure you want to delete ${name}?`, [
       { text: "Cancel", style: "cancel" },
       {
         text: "Delete",
@@ -28,17 +28,17 @@ const AdminCabinCard = ({ cabin, onDelete, onEdit }) => {
   };
 
   return (
-    <View className="flex-row bg-[#3b3b3b] rounded-xl overflow-hidden border border-[#524d4d] my-4 shadow-lg">
+    <View className="bg-black/70 rounded-2xl overflow-hidden border border-[#d2af84]/40 my-4 shadow-2xl">
       {/* Touchable area for navigation */}
       <TouchableOpacity
-        className="flex-row flex-1"
-        activeOpacity={0.85}
+        className="flex-row"
+        activeOpacity={0.92}
         onPress={() => {
           router.navigate(`/cabins/${id}/admin/bookings`);
         }}
       >
         {/* Left: Image Section */}
-        <View className="w-40 h-40">
+        <View className="w-36 h-36 m-4 rounded-xl overflow-hidden border-2 border-[#d2af84]/60 shadow-lg">
           <Image
             source={{
               uri:
@@ -46,29 +46,29 @@ const AdminCabinCard = ({ cabin, onDelete, onEdit }) => {
                   ? `${IMAGE_URL}/${image}`
                   : image || "fallback-image-url",
             }}
-            className="w-full h-full rounded-xl"
+            className="w-full h-full"
             resizeMode="cover"
           />
         </View>
 
         {/* Right: Info Section */}
-        <View className="flex-1 p-3">
-          <Text className="text-yellow-500 font-bold text-base">
-            Cabin {name}
+        <View className="flex-1 py-4 pr-4">
+          <Text className="text-[#d2af84] font-extrabold text-xl mb-1 tracking-wide">
+            {name}
           </Text>
-
-          <Text className="text-white my-1 flex-row items-center">
+          <View className="flex-row items-center mb-2">
             <FontAwesome name="users" size={18} color="#d2af84" />
-            <Text className="font-bold ml-3"> {maxCapacity} guests</Text>
-          </Text>
-
-          <View className="flex-row items-baseline mt-auto">
+            <Text className="font-semibold text-white ml-2">
+              {maxCapacity} guests
+            </Text>
+          </View>
+          <View className="flex-row items-baseline mb-2">
             {discount > 0 ? (
               <>
                 <Text className="text-2xl font-bold text-[#d2af84]">
                   ${regularPrice - discount}
                 </Text>
-                <Text className="ml-2 line-through text-white text-sm">
+                <Text className="ml-2 line-through text-white text-base">
                   ${regularPrice}
                 </Text>
               </>
@@ -77,37 +77,41 @@ const AdminCabinCard = ({ cabin, onDelete, onEdit }) => {
                 ${regularPrice}
               </Text>
             )}
-            <Text className="text-white text-sm ml-1">/ night</Text>
+            <Text className="text-white text-base ml-1">/ night</Text>
+          </View>
+          <View className="flex-row items-center gap-2 mt-2">
+            <Feather name="edit-2" size={16} color="#d2af84" />
+            <Text className="text-xs text-white/70">Tap card for bookings</Text>
           </View>
         </View>
       </TouchableOpacity>
 
-      {/* Action Buttons (not inside TouchableOpacity) */}
-      <View className="justify-between py-3 pr-3 gap-3">
+      {/* Action Buttons - Horizontal at bottom */}
+      <View className="flex-row justify-center items-center gap-3 px-4 pb-4">
         <TouchableOpacity
-          className="bg-yellow-500 px-3 py-1 rounded-lg mb-2"
+          className="bg-[#d2af84] px-4 py-2 rounded-full flex-1 shadow"
           onPress={() => {
-            router.navigate(`/cabins/${id}/edit`);
+            router.navigate(`/cabins/${id}/admin/edit`);
           }}
         >
-          <Text className="text-black font-medium">Edit</Text>
+          <Text className="text-black font-bold text-center">Edit</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          className="bg-yellow-500 px-3 py-1 rounded-lg mb-2"
+          className="bg-[#d2af84]/90 px-4 py-2 rounded-full flex-1 shadow"
           onPress={() => {
             duplicateCabinFn(id);
           }}
         >
-          <Text className="text-black font-medium">
-            {isDuplicating ? "Duplicating" : "Duplicate"}
+          <Text className="text-black font-bold text-center">
+            {isDuplicating ? "Duplicating..." : "Duplicate"}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          className="bg-red-500 px-3 py-1 rounded-lg"
+          className="bg-red-500 px-4 py-2 rounded-full flex-1 shadow"
           onPress={handleDelete}
         >
-          <Text className="text-white font-medium">
-            {isLoading ? "Deleting" : "Delete"}
+          <Text className="text-white font-bold text-center">
+            {isLoading ? "Deleting..." : "Delete"}
           </Text>
         </TouchableOpacity>
       </View>

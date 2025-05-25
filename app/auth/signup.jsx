@@ -12,6 +12,8 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import { useSignUp } from "../../hooks/useSignUp";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 
 export default function Signup() {
   const {
@@ -20,8 +22,9 @@ export default function Signup() {
     formState: { errors },
     setValue,
   } = useForm();
-  const { signUpFn, isLoading, error } = useSignUp();
+  const { signUpFn, isLoading } = useSignUp();
   const [datePickerVisible, setDatePickerVisible] = useState(false);
+  const router = useRouter();
 
   const onSubmit = async (data) => {
     try {
@@ -43,43 +46,45 @@ export default function Signup() {
     return birthDate <= eighteenYearsAgo;
   };
 
-  const showDatePicker = () => {
-    setDatePickerVisible(true);
-  };
-
-  const hideDatePicker = () => {
-    setDatePickerVisible(false);
-  };
-
+  const showDatePicker = () => setDatePickerVisible(true);
+  const hideDatePicker = () => setDatePickerVisible(false);
   const handleConfirm = (date) => {
     setValue("dateOfBirth", date);
     hideDatePicker();
   };
 
   return (
-    <ImageBackground
-      source={require("../../assets/images/aboutBackground.jpg")}
-      className="flex-1"
-      style={{ resizeMode: "cover" }}
-    >
-      {/* Overlay for readability */}
-      <View className="absolute inset-0 bg-black opacity-50" />
-
-      <ScrollView>
-        <View className="flex-1 justify-center items-center px-6 py-12">
-          <Text className="text-2xl font-bold mb-6 text-white z-10">
-            Đăng Ký
-          </Text>
+    <>
+      <ScrollView
+        contentContainerStyle={{
+          flexGrow: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          paddingVertical: 32,
+          paddingHorizontal: 16,
+        }}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View className="w-full max-w-md bg-black/70 rounded-3xl p-8 shadow-2xl border border-white/10">
+          <View className="items-center mb-8">
+            <Ionicons name="person-add-outline" size={40} color="#d2af84" />
+            <Text className="text-3xl font-extrabold text-white mt-3 mb-1 tracking-wide drop-shadow-lg">
+              Create Account
+            </Text>
+            <Text className="text-amber-200 text-base italic">
+              Join the Tranquility Retreat family!
+            </Text>
+          </View>
 
           {/* Full Name field */}
           <Controller
             control={control}
             name="fullName"
             rules={{
-              required: "Họ và tên không được để trống",
+              required: "Full name is required",
               minLength: {
                 value: 2,
-                message: "Họ và tên phải có ít nhất 2 ký tự",
+                message: "Full name must be at least 2 characters",
               },
             }}
             render={({ field }) => (
@@ -88,12 +93,12 @@ export default function Signup() {
                   value={field.value}
                   onBlur={field.onBlur}
                   onChangeText={field.onChange}
-                  placeholder="Họ và tên"
-                  placeholderTextColor="#ddd"
-                  className="w-full border border-white rounded-md p-3 mb-4 text-white z-10"
+                  placeholder="Full Name"
+                  placeholderTextColor="#bbb"
+                  className="w-full border border-[#d2af84] rounded-lg p-3 mb-2 text-white bg-black/40"
                 />
                 {errors.fullName && (
-                  <Text className="text-red-500 text-sm mb-2">
+                  <Text className="text-red-400 text-xs mb-2">
                     {errors.fullName.message}
                   </Text>
                 )}
@@ -101,14 +106,15 @@ export default function Signup() {
             )}
           />
 
+          {/* Email field */}
           <Controller
             control={control}
             name="email"
             rules={{
-              required: "Email không được để trống",
+              required: "Email is required",
               pattern: {
                 value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                message: "Email không format hợp lệ",
+                message: "Invalid email format",
               },
             }}
             render={({ field }) => (
@@ -118,13 +124,13 @@ export default function Signup() {
                   onBlur={field.onBlur}
                   onChangeText={field.onChange}
                   placeholder="Email"
-                  placeholderTextColor="#ddd"
+                  placeholderTextColor="#bbb"
                   keyboardType="email-address"
                   autoCapitalize="none"
-                  className="w-full border border-white rounded-md p-3 mb-4 text-white z-10"
+                  className="w-full border border-[#d2af84] rounded-lg p-3 mb-2 text-white bg-black/40"
                 />
                 {errors.email && (
-                  <Text className="text-red-500 text-sm mb-2">
+                  <Text className="text-red-400 text-xs mb-2">
                     {errors.email.message}
                   </Text>
                 )}
@@ -132,14 +138,15 @@ export default function Signup() {
             )}
           />
 
+          {/* Password field */}
           <Controller
             control={control}
             name="password"
             rules={{
-              required: "Password không được để trống",
+              required: "Password is required",
               minLength: {
                 value: 6,
-                message: "Mật khẩu phải có độ dài 6 kí tự trở lên",
+                message: "Password must be at least 6 characters",
               },
             }}
             render={({ field }) => (
@@ -148,13 +155,13 @@ export default function Signup() {
                   value={field.value}
                   onBlur={field.onBlur}
                   onChangeText={field.onChange}
-                  placeholder="Mật khẩu"
-                  placeholderTextColor="#ddd"
+                  placeholder="Password"
+                  placeholderTextColor="#bbb"
                   secureTextEntry
-                  className="w-full border border-white rounded-md p-3 mb-4 text-white z-10"
+                  className="w-full border border-[#d2af84] rounded-lg p-3 mb-2 text-white bg-black/40"
                 />
                 {errors.password && (
-                  <Text className="text-red-500 text-sm mb-2">
+                  <Text className="text-red-400 text-xs mb-2">
                     {errors.password.message}
                   </Text>
                 )}
@@ -167,10 +174,10 @@ export default function Signup() {
             control={control}
             name="phoneNumber"
             rules={{
-              required: "Số điện thoại không được để trống",
+              required: "Phone number is required",
               pattern: {
                 value: /^[0-9]{10,11}$/,
-                message: "Số điện thoại không hợp lệ",
+                message: "Invalid phone number",
               },
             }}
             render={({ field }) => (
@@ -179,13 +186,13 @@ export default function Signup() {
                   value={field.value}
                   onBlur={field.onBlur}
                   onChangeText={field.onChange}
-                  placeholder="Số điện thoại"
-                  placeholderTextColor="#ddd"
+                  placeholder="Phone Number"
+                  placeholderTextColor="#bbb"
                   keyboardType="phone-pad"
-                  className="w-full border border-white rounded-md p-3 mb-4 text-white z-10"
+                  className="w-full border border-[#d2af84] rounded-lg p-3 mb-2 text-white bg-black/40"
                 />
                 {errors.phoneNumber && (
-                  <Text className="text-red-500 text-sm mb-2">
+                  <Text className="text-red-400 text-xs mb-2">
                     {errors.phoneNumber.message}
                   </Text>
                 )}
@@ -198,10 +205,10 @@ export default function Signup() {
             control={control}
             name="nationalId"
             rules={{
-              required: "CMND/CCCD không được để trống",
+              required: "National ID is required",
               pattern: {
                 value: /^[0-9]{9,12}$/,
-                message: "CMND/CCCD không hợp lệ",
+                message: "Invalid National ID",
               },
             }}
             render={({ field }) => (
@@ -210,13 +217,13 @@ export default function Signup() {
                   value={field.value}
                   onBlur={field.onBlur}
                   onChangeText={field.onChange}
-                  placeholder="CMND/CCCD"
-                  placeholderTextColor="#ddd"
+                  placeholder="National ID"
+                  placeholderTextColor="#bbb"
                   keyboardType="number-pad"
-                  className="w-full border border-white rounded-md p-3 mb-4 text-white z-10"
+                  className="w-full border border-[#d2af84] rounded-lg p-3 mb-2 text-white bg-black/40"
                 />
                 {errors.nationalId && (
-                  <Text className="text-red-500 text-sm mb-2">
+                  <Text className="text-red-400 text-xs mb-2">
                     {errors.nationalId.message}
                   </Text>
                 )}
@@ -229,20 +236,20 @@ export default function Signup() {
             control={control}
             name="dateOfBirth"
             rules={{
-              required: "Ngày sinh không được để trống",
+              required: "Date of birth is required",
               validate: (value) =>
-                isAtLeast18(value) || "Bạn phải từ 18 tuổi trở lên",
+                isAtLeast18(value) || "You must be at least 18 years old",
             }}
             render={({ field }) => (
               <>
                 <TouchableOpacity
                   onPress={showDatePicker}
-                  className="w-full border border-white rounded-md p-3 mb-4 z-10"
+                  className="w-full border border-[#d2af84] rounded-lg p-3 mb-2 bg-black/40"
                 >
                   <Text className="text-white">
                     {field.value
-                      ? field.value.toLocaleDateString("vi-VN")
-                      : "Chọn ngày sinh"}
+                      ? field.value.toLocaleDateString("en-GB")
+                      : "Select Date of Birth"}
                   </Text>
                 </TouchableOpacity>
 
@@ -255,7 +262,7 @@ export default function Signup() {
                 />
 
                 {errors.dateOfBirth && (
-                  <Text className="text-red-500 text-sm mb-2">
+                  <Text className="text-red-400 text-xs mb-2">
                     {errors.dateOfBirth.message}
                   </Text>
                 )}
@@ -264,15 +271,22 @@ export default function Signup() {
           />
 
           <TouchableOpacity
-            className="w-full bg-[#d2af84] p-4 rounded-md z-10 mt-2"
+            className="w-full bg-[#d2af84] p-4 rounded-lg mt-4"
             onPress={handleSubmit(onSubmit)}
+            disabled={isLoading}
           >
-            <Text className="text-center text-black font-semibold">
-              {isLoading ? "Đang đăng ký" : "Đăng ký"}
+            <Text className="text-center text-black font-bold text-base tracking-wide">
+              {isLoading ? "Signing up..." : "Sign Up"}
+            </Text>
+          </TouchableOpacity>
+          {/* Go back to Log In */}
+          <TouchableOpacity className="mt-6" onPress={() => router.back()}>
+            <Text className="text-center text-amber-200 underline text-base">
+              ← Back to Log In
             </Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </ImageBackground>
+    </>
   );
 }

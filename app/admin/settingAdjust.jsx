@@ -1,8 +1,6 @@
 import {
   Text,
-  TextInput,
   View,
-  Button,
   ScrollView,
   ImageBackground,
   TouchableOpacity,
@@ -17,39 +15,42 @@ import { router } from "expo-router";
 function SettingAdjust() {
   const { data, isLoading, error } = useGetSetting();
 
-  if (isLoading)
+  if (isLoading) {
     return (
       <Spinner>
-        <Text className="text-black">Fetching the setting...</Text>
+        <Text className="text-black text-lg font-semibold">
+          Fetching your settings...
+        </Text>
       </Spinner>
     );
+  }
 
   return (
-    <View className="flex-1">
-      <ImageBackground
-        source={require("../../assets/images/aboutBackground.jpg")}
+    <>
+      <ScrollView
         className="flex-1"
-        style={{ resizeMode: "cover" }}
+        contentContainerStyle={{
+          paddingVertical: 40,
+          paddingHorizontal: 20,
+          minHeight: "100%",
+          justifyContent: "center",
+        }}
       >
-        <View className="absolute inset-0 bg-black opacity-40" />
+        <View className="bg-black/70 border border-[#d2af84]/30 rounded-3xl p-8 shadow-2xl backdrop-blur-sm">
+          <Text className="text-3xl text-center font-extrabold text-[#d2af84] mb-6 tracking-wide drop-shadow-lg">
+            Admin Settings
+          </Text>
 
-        {/* Back Button using Expo Router */}
-        <SafeAreaView className="absolute top-2 left-2 z-20">
-          <TouchableOpacity
-            onPress={() => router.back()} // ✅ Go back using Expo Router
-            className="bg-white/80 p-2 rounded-full"
-          >
-            <AntDesign name="arrowleft" size={20} color="black" />
-          </TouchableOpacity>
-        </SafeAreaView>
-
-        <ScrollView className="flex-1">
-          <View className="px-5 py-6">
-            {data && <UpdateSettingForm setting={data} />}
-          </View>
-        </ScrollView>
-      </ImageBackground>
-    </View>
+          {data ? (
+            <UpdateSettingForm setting={data} />
+          ) : (
+            <Text className="text-[#d2af84] text-center">
+              Unable to load settings.
+            </Text>
+          )}
+        </View>
+      </ScrollView>
+    </>
   );
 }
 
