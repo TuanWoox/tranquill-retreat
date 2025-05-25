@@ -1,6 +1,18 @@
 import React from "react";
-import { View, Text, ScrollView, TouchableOpacity, Alert } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Alert,
+  ImageBackground,
+  Dimensions,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+} from "react-native";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import Spinner from "@/components/Spinner";
 import { AntDesign } from "@expo/vector-icons";
 import { format, isToday, formatDistance, parseISO } from "date-fns";
@@ -13,6 +25,7 @@ import SpecialRequestSection from "@/components/SpecialRequestSection";
 import FinSummarySection from "@/components/FinSummarySection";
 import HeaderSection from "@/components/HeaderSection";
 import ActionSection from "@/components/ActionSection";
+import RatingSection from "@/components/RatingSection";
 import ButtonBack from "@/components/ButtonBack";
 
 const formatDistanceFromNow = (dateStr) =>
@@ -67,6 +80,9 @@ export default function BookingDetail() {
   const canEdit = status?.toLowerCase() === "confirmed";
   const canDelete = status?.toLowerCase() === "confirmed";
 
+  // Determine booking status for rating section
+  const bookingStatus = status?.toLowerCase() === "checked-out" ? "Past" : status;
+
   const onDelete = () => {
     Alert.alert(
       "Delete Booking",
@@ -90,51 +106,79 @@ export default function BookingDetail() {
   if (status?.toLowerCase() === "checked-out") statusColor = "#eab308";
 
   return (
-    <>
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ padding: 20, paddingBottom: 40 }}
+    <ImageBackground
+      source={require("@/assets/images/aboutBackground.jpg")}
+      className="flex-1 w-full h-full"
+      resizeMode="cover"
+    >
+      <View className="absolute inset-0 bg-black/70" />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        className="flex-1"
+        keyboardVerticalOffset={100}
       >
-        {/* Header Section */}
-        <HeaderSection
-          statusColor={statusColor}
-          id={id}
-          bookingStatus={status}
-        />
-        {/* Cabin Info Card */}
-        <CabinHeroBooking cabin={cabin} />
-        {/* Date & Duration Card */}
-        <StayDurationSection
-          startDate={startDate}
-          endDate={endDate}
-          numDates={numDates}
-        />
-        {/* Guest & Services Card */}
-        <GuestServiceSection
-          numGuests={numGuests}
-          hasBreakfast={hasBreakfast}
-        />
-        {/* Special Requests Card */}
-        <SpecialRequestSection observations={observations} />
-        {/* Financial Summary Card */}
-        <FinSummarySection
-          numDates={numDates}
-          cabinPrice={cabinPrice}
-          extrasPrice={extrasPrice}
-          totalPrice={totalPrice}
-          createdAt={createdAt}
-          isPaid={isPaid}
-        />
+        <SafeAreaView className="flex-1">
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ padding: 20, paddingBottom: 100 }}
+            keyboardShouldPersistTaps="handled"
+          >
+            {/* Header Section */}
+            <HeaderSection
+              statusColor={statusColor}
+              id={id}
+              bookingStatus={bookingStatus}
+            />
+            {/* Cabin Info Card */}
+            <CabinHeroBooking cabin={cabin} />
+            {/* Date & Duration Card */}
+            <StayDurationSection
+              startDate={startDate}
+              endDate={endDate}
+              numDates={numDates}
+            />
+            {/* Guest & Services Card */}
+            <GuestServiceSection
+              numGuests={numGuests}
+              hasBreakfast={hasBreakfast}
+            />
+            {/* Special Requests Card */}
+            <SpecialRequestSection observations={observations} />
+            {/* Financial Summary Card */}
+            <FinSummarySection
+              numDates={numDates}
+              cabinPrice={cabinPrice}
+              extrasPrice={extrasPrice}
+              totalPrice={totalPrice}
+              createdAt={createdAt}
+              isPaid={isPaid}
+            />
 
-        {/* Action Buttons */}
-        <ActionSection
-          canDelete={canDelete}
-          canEdit={canEdit}
-          onDelete={onDelete}
-          id={_id}
-        />
-        <ButtonBack />
-      </ScrollView>
-    </>
+            {/* Rating Section - Only show for past bookings */}
+            {(booking.status === "checked-out" ||
+              (bookingStatus === "Past" &&
+                booking.status !== "unconfirmed")) && (
+              <RatingSection
+                bookingId={_id}
+                cabinId={cabin._id}
+                cabinName={cabin.name}
+                existingRating={booking.rating} // If rating already exists
+              />
+            )}
+
+            {/* Action Buttons */}
+            <ActionSection
+              canDelete={canDelete}
+              canEdit={canEdit}
+              onDelete={onDelete}
+              id={_id}
+            />
+            
+            {/* Back Button */}
+            <ButtonBack />
+          </ScrollView>
+        </SafeAreaView>
+      </KeyboardAvoidingView>
+    </ImageBackground>
   );
 }
