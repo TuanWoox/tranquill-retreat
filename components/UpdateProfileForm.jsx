@@ -11,6 +11,7 @@ import { useForm, Controller } from "react-hook-form";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { useUpdateProfile } from "@/hooks/useUpdateProfile";
 import { useRouter } from "expo-router";
+
 export default function UpdateProfileForm({ guest }) {
   const { fullName, email, phoneNumber, nationalId, dateOfBirth } = guest;
   const router = useRouter();
@@ -22,7 +23,8 @@ export default function UpdateProfileForm({ guest }) {
   } = useForm();
 
   const [datePickerVisible, setDatePickerVisible] = useState(false);
-  const { updateProfileFn, isLoading, error } = useUpdateProfile();
+  const { updateProfileFn, isLoading } = useUpdateProfile();
+
   const onSubmit = async (data) => {
     try {
       updateProfileFn(data);
@@ -52,8 +54,8 @@ export default function UpdateProfileForm({ guest }) {
   return (
     <ScrollView contentContainerStyle={{ padding: 20 }}>
       <View className="flex-1 justify-center items-center px-6 py-12">
-        <Text className="text-2xl font-bold mb-6 text-white">
-          Cập nhật thông tin
+        <Text className="text-2xl font-extrabold mb-6 text-[#d2af84] tracking-wide drop-shadow-lg">
+          Update Profile
         </Text>
 
         {/* Full Name field */}
@@ -62,10 +64,10 @@ export default function UpdateProfileForm({ guest }) {
           name="fullName"
           defaultValue={fullName}
           rules={{
-            required: "Họ và tên không được để trống",
+            required: "Full name is required",
             minLength: {
               value: 2,
-              message: "Họ và tên phải có ít nhất 2 ký tự",
+              message: "Full name must be at least 2 characters",
             },
           }}
           render={({ field }) => (
@@ -74,12 +76,12 @@ export default function UpdateProfileForm({ guest }) {
                 value={field.value}
                 onBlur={field.onBlur}
                 onChangeText={field.onChange}
-                placeholder="Họ và tên"
-                placeholderTextColor="#ddd"
-                className="w-full border border-white rounded-md p-3 mb-4 text-white"
+                placeholder="Full Name"
+                placeholderTextColor="#bbb"
+                className="w-full border border-[#d2af84] rounded-lg p-3 mb-4 text-white bg-black/40"
               />
               {errors.fullName && (
-                <Text className="text-red-500 text-sm mb-2">
+                <Text className="text-red-400 text-xs mb-2">
                   {errors.fullName.message}
                 </Text>
               )}
@@ -93,10 +95,10 @@ export default function UpdateProfileForm({ guest }) {
           name="email"
           defaultValue={email}
           rules={{
-            required: "Email không được để trống",
+            required: "Email is required",
             pattern: {
               value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-              message: "Email không hợp lệ",
+              message: "Invalid email format",
             },
           }}
           render={({ field }) => (
@@ -106,13 +108,13 @@ export default function UpdateProfileForm({ guest }) {
                 onBlur={field.onBlur}
                 onChangeText={field.onChange}
                 placeholder="Email"
-                placeholderTextColor="#ddd"
+                placeholderTextColor="#bbb"
                 keyboardType="email-address"
                 autoCapitalize="none"
-                className="w-full border border-white rounded-md p-3 mb-4 text-white"
+                className="w-full border border-[#d2af84] rounded-lg p-3 mb-4 text-white bg-black/40"
               />
               {errors.email && (
-                <Text className="text-red-500 text-sm mb-2">
+                <Text className="text-red-400 text-xs mb-2">
                   {errors.email.message}
                 </Text>
               )}
@@ -126,10 +128,10 @@ export default function UpdateProfileForm({ guest }) {
           name="phoneNumber"
           defaultValue={phoneNumber}
           rules={{
-            required: "Số điện thoại không được để trống",
+            required: "Phone number is required",
             pattern: {
               value: /^[0-9]{10,11}$/,
-              message: "Số điện thoại không hợp lệ",
+              message: "Invalid phone number",
             },
           }}
           render={({ field }) => (
@@ -138,13 +140,13 @@ export default function UpdateProfileForm({ guest }) {
                 value={field.value}
                 onBlur={field.onBlur}
                 onChangeText={field.onChange}
-                placeholder="Số điện thoại"
-                placeholderTextColor="#ddd"
+                placeholder="Phone Number"
+                placeholderTextColor="#bbb"
                 keyboardType="phone-pad"
-                className="w-full border border-white rounded-md p-3 mb-4 text-white"
+                className="w-full border border-[#d2af84] rounded-lg p-3 mb-4 text-white bg-black/40"
               />
               {errors.phoneNumber && (
-                <Text className="text-red-500 text-sm mb-2">
+                <Text className="text-red-400 text-xs mb-2">
                   {errors.phoneNumber.message}
                 </Text>
               )}
@@ -158,10 +160,10 @@ export default function UpdateProfileForm({ guest }) {
           name="nationalId"
           defaultValue={nationalId}
           rules={{
-            required: "CMND/CCCD không được để trống",
+            required: "National ID is required",
             pattern: {
               value: /^[0-9]{9,12}$/,
-              message: "CMND/CCCD không hợp lệ",
+              message: "Invalid National ID",
             },
           }}
           render={({ field }) => (
@@ -170,13 +172,13 @@ export default function UpdateProfileForm({ guest }) {
                 value={field.value}
                 onBlur={field.onBlur}
                 onChangeText={field.onChange}
-                placeholder="CMND/CCCD"
-                placeholderTextColor="#ddd"
+                placeholder="National ID"
+                placeholderTextColor="#bbb"
                 keyboardType="number-pad"
-                className="w-full border border-white rounded-md p-3 mb-4 text-white"
+                className="w-full border border-[#d2af84] rounded-lg p-3 mb-4 text-white bg-black/40"
               />
               {errors.nationalId && (
-                <Text className="text-red-500 text-sm mb-2">
+                <Text className="text-red-400 text-xs mb-2">
                   {errors.nationalId.message}
                 </Text>
               )}
@@ -188,11 +190,11 @@ export default function UpdateProfileForm({ guest }) {
         <Controller
           control={control}
           name="dateOfBirth"
-          defaultValue={dateOfBirth ? new Date(dateOfBirth) : new Date()} // Make sure dateOfBirth is a valid Date object
+          defaultValue={dateOfBirth ? new Date(dateOfBirth) : new Date()}
           rules={{
-            required: "Ngày sinh không được để trống",
+            required: "Date of birth is required",
             validate: (value) =>
-              isAtLeast18(value) || "Bạn phải từ 18 tuổi trở lên",
+              isAtLeast18(value) || "You must be at least 18 years old",
           }}
           render={({ field }) => {
             const dateValue = field.value ? new Date(field.value) : new Date();
@@ -200,12 +202,12 @@ export default function UpdateProfileForm({ guest }) {
               <>
                 <TouchableOpacity
                   onPress={showDatePicker}
-                  className="w-full border border-white rounded-md p-3 mb-4"
+                  className="w-full border border-[#d2af84] rounded-lg p-3 mb-4 bg-black/40"
                 >
                   <Text className="text-white">
                     {dateValue
-                      ? dateValue.toLocaleDateString("vi-VN")
-                      : "Chọn ngày sinh"}
+                      ? dateValue.toLocaleDateString("en-GB")
+                      : "Select Date of Birth"}
                   </Text>
                 </TouchableOpacity>
 
@@ -218,7 +220,7 @@ export default function UpdateProfileForm({ guest }) {
                 />
 
                 {errors.dateOfBirth && (
-                  <Text className="text-red-500 text-sm mb-2">
+                  <Text className="text-red-400 text-xs mb-2">
                     {errors.dateOfBirth.message}
                   </Text>
                 )}
@@ -229,20 +231,21 @@ export default function UpdateProfileForm({ guest }) {
 
         {/* Update Button */}
         <TouchableOpacity
-          className="w-full bg-[#d2af84] p-4 rounded-md mt-4"
+          className="w-full bg-[#d2af84] p-4 rounded-lg mt-4"
           onPress={handleSubmit(onSubmit)}
+          disabled={isLoading}
         >
-          <Text className="text-center text-black font-semibold">
-            {isLoading ? "Đang cập nhật" : "Cập nhật"}
+          <Text className="text-center text-black font-bold text-base tracking-wide">
+            {isLoading ? "Updating..." : "Update Profile"}
           </Text>
         </TouchableOpacity>
-        {/* ChangePassword Button */}
+        {/* Change Password Button */}
         <TouchableOpacity
-          className="w-full bg-[#d2af84] p-4 rounded-md mt-4"
+          className="w-full bg-[#d2af84] p-4 rounded-lg mt-4"
           onPress={() => router.push("/user/profile/changePassword")}
         >
-          <Text className="text-center text-black font-semibold">
-            Đổi mật khẩu
+          <Text className="text-center text-black font-bold text-base tracking-wide">
+            Change Password
           </Text>
         </TouchableOpacity>
       </View>

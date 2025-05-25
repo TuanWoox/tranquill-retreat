@@ -15,22 +15,20 @@ function NotAuthTabUser() {
           className="w-70 bg-[#d2af84] px-4 py-3 rounded-md"
           onPress={() => router.push("/auth/login")}
         >
-          <Text className="text-black text-center font-semibold">
-            Đăng Nhập
-          </Text>
+          <Text className="text-black text-center font-semibold">Log In</Text>
         </TouchableOpacity>
         <TouchableOpacity
           className="w-full bg-[#d2af84] px-4 py-3 rounded-md mt-3"
           onPress={() => router.push("/auth/signup")}
         >
-          <Text className="text-black text-center font-semibold">Đăng Ký</Text>
+          <Text className="text-black text-center font-semibold">Sign Up</Text>
         </TouchableOpacity>
         <TouchableOpacity
           className="z-10 mt-4"
           onPress={() => router.push("/auth/forgetPassword")}
         >
           <Text className="text-white text-center underline">
-            Quên mật khẩu?
+            Forget password?
           </Text>
         </TouchableOpacity>
       </View>
