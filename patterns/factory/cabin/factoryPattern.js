@@ -7,7 +7,7 @@ import {
   SortByCapacityDesc,
   SortByDiscountAsc,
   SortByDiscountDesc,
-} from "../strategy/concreateStrategies";
+} from "../../strategy/cabin/concreateStrategies";
 
 class SortFactory {
   getSort(sortType) {
