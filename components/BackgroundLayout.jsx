@@ -18,7 +18,9 @@ export default function BackgroundLayout({ children }) {
       <SafeAreaView className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-black/90" />
 
       {/* Content container */}
-      <View style={{ flex: 1, position: "relative" }}>{children}</View>
+      <SafeAreaView style={{ flex: 1, position: "relative" }}>
+        {children}
+      </SafeAreaView>
     </ImageBackground>
   );
 }
