@@ -6,21 +6,16 @@ import queryClient from "../config/reactQuery";
 // Hook for submitting/updating a rating
 export const useSubmitRating = () => {
   const {
-    mutate: submitRatingFn,
+    mutate: mutateFunction,
     isLoading,
     error,
     isSuccess,
   } = useMutation({
     mutationFn: submitRating,
-    onSuccess: (data, variables) => {
-      // Invalidate and refetch related queries
-      queryClient.invalidateQueries({
-        queryKey: ["cabinRatings", variables.cabinId],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["booking", variables.bookingId],
-      });
-
+    onSuccess: (data) => {
+      // Default success behavior
+      queryClient.invalidateQueries({ queryKey: ["cabinRatings"] });
+      queryClient.invalidateQueries({ queryKey: ["rating"] });
       Toast.show({
         type: "success",
         text1: "Rating Submitted",
@@ -31,10 +26,27 @@ export const useSubmitRating = () => {
       Toast.show({
         type: "error",
         text1: "Rating Failed",
-        text2: err?.message || "Please try again later",
+        text2: err.message || "Failed to submit rating",
       });
     },
   });
+
+  // Return a function that allows passing callbacks
+  const submitRatingFn = (data, options = {}) => {
+    return mutateFunction(data, {
+      onSuccess: (responseData) => {
+        // If custom success callback is provided, call it with the response data
+        if (options?.onSuccess) {
+          options.onSuccess(responseData);
+        }
+      },
+      onError: (error) => {
+        if (options?.onError) {
+          options.onError(error);
+        }
+      },
+    });
+  };
 
   return {
     submitRatingFn,

@@ -22,7 +22,6 @@ export default function DateSelector({
 
   useEffect(() => {
     if (isSuccess) {
-      console.log("Updated booked dates:", bookedDates);
     }
   }, [bookedDates, isSuccess]);
 

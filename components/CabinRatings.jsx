@@ -13,7 +13,6 @@ function CabinRatings({ cabinId }) {
   const { data, isLoading, error } = useCabinRatingsFormatted(cabinId);
   const [expanded, setExpanded] = useState(false);
   const [showStats, setShowStats] = useState(false);
-
   if (isLoading) return <Spinner />;
 
   // Get the 3 most recent ratings if not expanded

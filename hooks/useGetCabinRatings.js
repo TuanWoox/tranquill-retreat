@@ -18,8 +18,11 @@ export const useGetCabinRatings = (cabinId, options = {}) => {
 
 // Hook for getting cabin ratings with formatted data
 export const useCabinRatingsFormatted = (cabinId) => {
-  const query = useGetCabinRatings(cabinId);
-
+  const query = useQuery({
+    queryKey: ["cabinRatings", cabinId],
+    queryFn: () => getRatingsByCabinId(cabinId),
+    enabled: !!cabinId,
+  });
   // Format the data based on your API response structure
   const formattedData = React.useMemo(() => {
     if (!query.data) {
@@ -30,7 +33,6 @@ export const useCabinRatingsFormatted = (cabinId) => {
         ratingDistribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
       };
     }
-
     const {
       averageRating = 0,
       totalRatings = 0,
