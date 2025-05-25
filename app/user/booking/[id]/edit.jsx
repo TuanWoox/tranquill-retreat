@@ -58,8 +58,9 @@ const EditBookingScreen = () => {
     const extrasPrice =
       formData.hasBreakfast === false
         ? 0
-        : formData.numGuests * settings.breakfastPrice * formData.numDates;
-    formData.extrasPrice = extrasPrice;
+        : formData.numGuests * settings.breakfastPrice * booking.numDates;
+
+    formData.extrasPrice = Number(extrasPrice);
 
     try {
       updateBookingFn(formData);

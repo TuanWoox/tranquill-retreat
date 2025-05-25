@@ -49,24 +49,7 @@ const ReservationsScreen = () => {
         {/* Content Area */}
         <View className="flex-1 justify-center px-5 py-6 mt-20">
           {/* Conditional rendering of reservations or the no reservations message */}
-          {!bookings || bookings.length === 0 ? (
-            <View className="flex-1">
-              <View className="flex-1" />
-              <View className="items-center">
-                <Text className="text-lg text-white text-center mb-4">
-                  You have no reservations yet. Check out our{" "}
-                  <Text
-                    className="underline text-accent-500"
-                    onPress={navigateToCabins}
-                  >
-                    luxury cabins →
-                  </Text>
-                </Text>
-              </View>
-            </View>
-          ) : (
-            <BookingList bookings={bookings} />
-          )}
+          <BookingList bookings={bookings} />
         </View>
       </ImageBackground>
     </View>

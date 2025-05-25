@@ -5,8 +5,8 @@ import BookingCard from "./BookingCard";
 const BookingList = ({ bookings = [] }) => {
   if (!bookings || bookings.length === 0) {
     return (
-      <View style={{ padding: 24, alignItems: "center" }}>
-        <Text style={{ color: "#E5E7EB", fontSize: 16 }}>
+      <View className="flex-1 justify-center items-center py-16">
+        <Text className="text-slate-400 text-lg font-semibold mb-2">
           No bookings found
         </Text>
       </View>

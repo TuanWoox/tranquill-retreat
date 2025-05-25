@@ -10,6 +10,24 @@ export const getAllBookings = async () => {
     throw { message: errMsg };
   }
 };
+
+export const getBookingsByCabinId = async (data) => {
+  try {
+    const response = await axiosAuth.get(
+      `${API_URL}/booking/getBookingsByCabinId`,
+      {
+        params: {
+          cabinId: data,
+        },
+      }
+    );
+    return response.data;
+  } catch (err) {
+    const errMsg = err.response?.data?.message || "Không thể lấy lịch";
+    throw { message: errMsg };
+  }
+};
+
 export const deleteBooking = async (id) => {
   try {
     const response = await axiosAuth.delete(
