@@ -62,7 +62,7 @@ function Bookings() {
   if (isLoading) {
     return (
       <View className="flex-1 justify-center items-center py-16">
-        <AdminHeader />
+        <BookingMagementHeader />
         <Text className="text-slate-400 text-lg font-semibold mb-2">
           Loading bookings...
         </Text>
@@ -73,7 +73,7 @@ function Bookings() {
   if (error) {
     return (
       <View className="flex-1 justify-center items-center py-16">
-        <AdminHeader />
+        <BookingMagementHeader />
         <Text className="text-red-500 text-lg font-semibold mb-2">
           Failed to load bookings
         </Text>
@@ -84,7 +84,7 @@ function Bookings() {
   if (!bookings || bookings.length === 0) {
     return (
       <View className="flex-1 justify-center items-center py-16">
-        <AdminHeader />
+        <BookingMagementHeader />
         <Text className="text-slate-400 text-lg font-semibold mb-2">
           No bookings found
         </Text>
@@ -167,7 +167,7 @@ function Bookings() {
       {/* Booking List with header */}
       <AdminBookingList
         bookings={filteredBookings}
-        ListHeaderComponent={<AdminHeader />}
+        ListHeaderComponent={<BookingMagementHeader />}
         contentContainerStyle={{ paddingBottom: 30, paddingHorizontal: 24 }}
       />
     </SafeAreaView>

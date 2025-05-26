@@ -30,7 +30,6 @@ const BookingCard = ({ booking }) => {
     cabin,
   } = booking;
   const router = useRouter();
-
   // Use booking.status directly
   const bookingStatus = status?.toLowerCase();
   const {

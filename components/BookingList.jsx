@@ -12,7 +12,6 @@ const BookingList = ({ bookings = [] }) => {
       </View>
     );
   }
-
   return (
     <FlatList
       data={bookings}
