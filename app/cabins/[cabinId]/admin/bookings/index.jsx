@@ -9,6 +9,7 @@ import { BookingFilter } from "@/patterns/strategy/booking/sortStrategies";
 import { FilterByAll } from "@/patterns/strategy/booking/concreateStrategies";
 import { AntDesign } from "@expo/vector-icons";
 import BookingMagementHeader from "@/components/BookingMagementHeader";
+import NotFoundCard from "@/components/NotFoundCard";
 
 const SORT_OPTIONS = [
   { key: "all", label: "All" },
@@ -59,19 +60,6 @@ function Bookings() {
     return currentOption ? currentOption.label : "All";
   };
 
-  // Admin Management Header
-  const AdminHeader = () => (
-    <View className="w-full items-center mt-8 mb-6">
-      <Text className="text-3xl font-extrabold text-[#d2af84] tracking-wide drop-shadow-lg mb-2">
-        Admin Booking Management
-      </Text>
-      <View className="h-1 w-32 bg-[#d2af84] rounded-full mb-2" />
-      <Text className="text-base text-white/80 italic">
-        Manage all bookings for this cabin below
-      </Text>
-    </View>
-  );
-
   if (isLoading) {
     return (
       <View className="flex-1 justify-center items-center py-16">
@@ -94,13 +82,18 @@ function Bookings() {
     );
   }
 
-  if (!bookings || bookings.length === 0) {
+  if (!bookings) {
     return (
       <View className="flex-1 justify-center items-center py-16">
         <BookingMagementHeader />
-        <Text className="text-slate-400 text-lg font-semibold mb-2">
-          No bookings found
-        </Text>
+        <NotFoundCard
+          title="Failed to Load Bookings"
+          message="There was a problem loading the bookings for this cabin."
+          suggestion="Please try again later."
+          icon="calendar"
+          iconColor="#eab308"
+          error={error}
+        />
       </View>
     );
   }
@@ -178,11 +171,22 @@ function Bookings() {
       </Modal>
 
       {/* Booking List with header */}
-      <AdminBookingList
-        bookings={filteredBookings}
-        ListHeaderComponent={<BookingMagementHeader />}
-        contentContainerStyle={{ paddingBottom: 30, paddingHorizontal: 24 }}
-      />
+      {filteredBookings.length > 0 ? (
+        <AdminBookingList
+          bookings={filteredBookings}
+          ListHeaderComponent={<BookingMagementHeader />}
+          contentContainerStyle={{ paddingBottom: 30, paddingHorizontal: 24 }}
+        />
+      ) : (
+        <NotFoundCard
+          title="No Booking Found"
+          message="There is no booking matching the filter now"
+          suggestion="Please try again later."
+          icon="calendar"
+          iconColor="#eab308"
+          error={error}
+        />
+      )}
     </SafeAreaView>
   );
 }

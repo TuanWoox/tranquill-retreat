@@ -29,6 +29,7 @@ import GuestInfoSection from "@/components/GuestInfoSection";
 import HeaderSection from "@/components/HeaderSection";
 import ActionSection from "@/components/ActionSection";
 import { SafeAreaView } from "react-native-safe-area-context";
+import NotFoundCard from "@/components/NotFoundCard";
 
 const IMAGE_URL = process.env.EXPO_PUBLIC_BACKEND_URL_IMAGE;
 
@@ -56,19 +57,18 @@ export default function AdminDetailsBooking() {
     if (booking?.status === "checked-out") router.back();
   }, [booking?.status]);
 
-  if (isLoading) return <Spinner />;
+  if (isLoading) return <Spinner>Fetch The Booking</Spinner>;
   if (error || !booking)
     return (
-      <View className="flex-1 justify-center items-center bg-[#181b20]">
-        <View className="items-center p-10">
-          <AntDesign name="exclamationcircleo" size={64} color="#ff4d4f" />
-          <Text className="text-[#ff4d4f] text-xl font-bold mt-4">
-            Booking not found
-          </Text>
-          <Text className="text-[#94a3b8] text-sm mt-2">
-            Please try again later
-          </Text>
-        </View>
+      <View className="flex-1 justify-center items-center ">
+        <NotFoundCard
+          title="No Booking Found"
+          message="There is no booking at the moment"
+          suggestion="Please try again later."
+          icon="calendar"
+          iconColor="#eab308"
+          error={error}
+        />
       </View>
     );
 
