@@ -8,18 +8,15 @@ import {
   ImageBackground,
   Dimensions,
   Image,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import Spinner from "@/components/Spinner";
-import {
-  AntDesign,
-  FontAwesome,
-  MaterialIcons,
-  Feather,
-} from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
 import { format, isToday, formatDistance, parseISO } from "date-fns";
 import { useGetOneBooking } from "@/hooks/useGetOneBooking";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { useDeleteBooking } from "@/hooks/useDeleteBooking";
 import GuestServiceSection from "@/components/GuestServiceSection";
 import CabinHeroBooking from "@/components/CabinHeroBooking";
@@ -28,6 +25,8 @@ import SpecialRequestSection from "@/components/SpecialRequestSection";
 import FinSummarySection from "@/components/FinSummarySection";
 import HeaderSection from "@/components/HeaderSection";
 import ActionSection from "@/components/ActionSection";
+import RatingSection from "@/components/RatingSection";
+import ButtonBack from "@/components/ButtonBack";
 
 const formatDistanceFromNow = (dateStr) =>
   formatDistance(parseISO(dateStr), new Date(), {
@@ -36,11 +35,10 @@ const formatDistanceFromNow = (dateStr) =>
 
 export default function BookingDetail() {
   const { id } = useLocalSearchParams();
-  const router = useRouter();
   const { data: booking, isLoading, error } = useGetOneBooking(id);
   const {
     deleteBookingFn,
-    isLoading: isDeleteing,
+    isLoading: isDeleting,
     error: deleteError,
   } = useDeleteBooking();
 
@@ -75,27 +73,15 @@ export default function BookingDetail() {
     hasBreakfast,
     isPaid,
     _id,
+    status,
   } = booking;
 
-  const now = new Date();
-  const start = new Date(startDate);
-  const end = new Date(endDate);
+  // Only allow edit/delete if status is "confirmed"
+  const canEdit = status?.toLowerCase() === "confirmed";
+  const canDelete = status?.toLowerCase() === "confirmed";
 
-  let bookingStatus = "";
-  let statusColor = "";
-
-  if (now < start) {
-    bookingStatus = "Upcoming";
-    statusColor = "#10b981"; // Green
-  } else if (now > end) {
-    bookingStatus = "Past";
-    statusColor = "#f59e0b"; // Orange
-  } else {
-    bookingStatus = "In Progress";
-    statusColor = "#3b82f6"; // Blue
-  }
-  const canEdit = bookingStatus === "Upcoming";
-  const canDelete = bookingStatus === "Upcoming" || bookingStatus === "Past";
+  // Determine booking status for rating section
+  const bookingStatus = status?.toLowerCase() === "checked-out" ? "Past" : status;
 
   const onDelete = () => {
     Alert.alert(
@@ -114,6 +100,11 @@ export default function BookingDetail() {
     );
   };
 
+  // Status color for header
+  let statusColor = "#22c55e"; // default green
+  if (status?.toLowerCase() === "checked-in") statusColor = "#3b82f6";
+  if (status?.toLowerCase() === "checked-out") statusColor = "#eab308";
+
   return (
     <ImageBackground
       source={require("@/assets/images/aboutBackground.jpg")}
@@ -121,51 +112,73 @@ export default function BookingDetail() {
       resizeMode="cover"
     >
       <View className="absolute inset-0 bg-black/70" />
-      <SafeAreaView className="flex-1">
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ padding: 20, paddingBottom: 40 }}
-        >
-          {/* Header Section */}
-          <HeaderSection
-            statusColor={statusColor}
-            id={id}
-            bookingStatus={bookingStatus}
-          />
-          {/* Cabin Info Card */}
-          <CabinHeroBooking cabin={cabin} />
-          {/* Date & Duration Card */}
-          <StayDurationSection
-            startDate={startDate}
-            endDate={endDate}
-            numDates={numDates}
-          />
-          {/* Guest & Services Card */}
-          <GuestServiceSection
-            numGuests={numGuests}
-            hasBreakfast={hasBreakfast}
-          />
-          {/* Special Requests Card */}
-          <SpecialRequestSection observations={observations} />
-          {/* Financial Summary Card */}
-          <FinSummarySection
-            numDates={numDates}
-            cabinPrice={cabinPrice}
-            extrasPrice={extrasPrice}
-            totalPrice={totalPrice}
-            createdAt={createdAt}
-            isPaid={isPaid}
-          />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        className="flex-1"
+        keyboardVerticalOffset={100}
+      >
+        <SafeAreaView className="flex-1">
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ padding: 20, paddingBottom: 100 }}
+            keyboardShouldPersistTaps="handled"
+          >
+            {/* Header Section */}
+            <HeaderSection
+              statusColor={statusColor}
+              id={id}
+              bookingStatus={bookingStatus}
+            />
+            {/* Cabin Info Card */}
+            <CabinHeroBooking cabin={cabin} />
+            {/* Date & Duration Card */}
+            <StayDurationSection
+              startDate={startDate}
+              endDate={endDate}
+              numDates={numDates}
+            />
+            {/* Guest & Services Card */}
+            <GuestServiceSection
+              numGuests={numGuests}
+              hasBreakfast={hasBreakfast}
+            />
+            {/* Special Requests Card */}
+            <SpecialRequestSection observations={observations} />
+            {/* Financial Summary Card */}
+            <FinSummarySection
+              numDates={numDates}
+              cabinPrice={cabinPrice}
+              extrasPrice={extrasPrice}
+              totalPrice={totalPrice}
+              createdAt={createdAt}
+              isPaid={isPaid}
+            />
 
-          {/* Action Buttons */}
-          <ActionSection
-            canDelete={canDelete}
-            canEdit={canEdit}
-            onDelete={onDelete}
-            id={_id}
-          />
-        </ScrollView>
-      </SafeAreaView>
+            {/* Rating Section - Only show for past bookings */}
+            {(booking.status === "checked-out" ||
+              (bookingStatus === "Past" &&
+                booking.status !== "unconfirmed")) && (
+              <RatingSection
+                bookingId={_id}
+                cabinId={cabin._id}
+                cabinName={cabin.name}
+                existingRating={booking.rating} // If rating already exists
+              />
+            )}
+
+            {/* Action Buttons */}
+            <ActionSection
+              canDelete={canDelete}
+              canEdit={canEdit}
+              onDelete={onDelete}
+              id={_id}
+            />
+            
+            {/* Back Button */}
+            <ButtonBack />
+          </ScrollView>
+        </SafeAreaView>
+      </KeyboardAvoidingView>
     </ImageBackground>
   );
 }

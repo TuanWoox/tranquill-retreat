@@ -12,9 +12,9 @@ import Spinner from "@/components/Spinner";
 import CabinList from "@/components/CabinList";
 import { useAuthContext } from "@/context/AuthContext";
 import { useRouter } from "expo-router";
-import { CabinSorter } from "@/patterns/strategy/sortStrategies";
-import { SortByNameAsc } from "@/patterns/strategy/concreateStrategies";
-import SortFactory from "@/patterns/factory/factoryPattern";
+import { CabinSorter } from "@/patterns/strategy/cabin/sortStrategies";
+import { SortByNameAsc } from "@/patterns/strategy/cabin/concreateStrategies";
+import SortFactory from "@/patterns/factory/cabin/factoryPattern";
 import { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AntDesign } from "@expo/vector-icons";
@@ -82,7 +82,7 @@ export default function Index() {
     <ImageBackground
       source={require("../../assets/images/aboutBackground.jpg")}
       className="flex-1"
-      blurRadius={4}
+      blurRadius={3}
       style={{ resizeMode: "cover" }}
     >
       {/* Overlay for readability */}

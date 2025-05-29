@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
-import { format, formatDistance, isToday, parseISO } from "date-fns";
+import { format, isToday } from "date-fns";
 import {
   AntDesign,
   FontAwesome,
@@ -9,18 +9,13 @@ import {
 } from "@expo/vector-icons";
 const IMAGE_URL = process.env.EXPO_PUBLIC_BACKEND_URL_IMAGE;
 
-const formatDistanceFromNow = (dateStr) =>
-  formatDistance(parseISO(dateStr), new Date(), {
-    addSuffix: true,
-  }).replace("about ", "");
+const statusMap = {
+  confirmed: { color: "#22c55e", icon: "calendar-check", label: "Confirmed" },
+  "checked-in": { color: "#3b82f6", icon: "login", label: "Checked-in" },
+  "checked-out": { color: "#eab308", icon: "logout", label: "Checked-out" },
+};
 
 const CARD_HEIGHT = 150;
-
-const statusMap = {
-  Upcoming: { color: "#22c55e", icon: "calendar-check" },
-  "In Progress": { color: "#3b82f6", icon: "progress-clock" },
-  Past: { color: "#eab308", icon: "history" },
-};
 
 const BookingCard = ({ booking }) => {
   const {
@@ -35,21 +30,13 @@ const BookingCard = ({ booking }) => {
     cabin,
   } = booking;
   const router = useRouter();
-
-  // Status logic
-  const now = new Date();
-  const start = new Date(startDate);
-  const end = new Date(endDate);
-
-  let bookingStatus = "";
-  if (now < start) {
-    bookingStatus = "Upcoming";
-  } else if (now > end) {
-    bookingStatus = "Past";
-  } else {
-    bookingStatus = "In Progress";
-  }
-  const { color: badgeColor, icon: badgeIcon } = statusMap[bookingStatus];
+  // Use booking.status directly
+  const bookingStatus = status?.toLowerCase();
+  const {
+    color: badgeColor,
+    icon: badgeIcon,
+    label: badgeLabel,
+  } = statusMap[bookingStatus] || statusMap.confirmed;
 
   return (
     <TouchableOpacity
@@ -111,7 +98,7 @@ const BookingCard = ({ booking }) => {
               size={16}
               color="#d2af84"
             />{" "}
-            {numDates} date{numDates > 1 ? "s" : ""}
+            {numDates} night{numDates > 1 ? "s" : ""}
           </Text>
           <View
             className="px-3 py-1 rounded-full flex-row items-center ml-2"
@@ -119,7 +106,7 @@ const BookingCard = ({ booking }) => {
           >
             <MaterialCommunityIcons name={badgeIcon} size={14} color="#fff" />
             <Text className="text-xs font-bold uppercase text-white ml-1">
-              {bookingStatus}
+              {badgeLabel}
             </Text>
           </View>
         </View>
@@ -136,9 +123,7 @@ const BookingCard = ({ booking }) => {
             }}
           >
             {format(new Date(startDate), "MMM dd")}
-            {isToday(new Date(startDate))
-              ? " (Today)"
-              : ` (${formatDistanceFromNow(startDate)})`}
+            {isToday(new Date(startDate)) ? " (Today)" : ""}
             {"  "}→ {format(new Date(endDate), "MMM dd yyyy")}
           </Text>
         </View>

@@ -13,9 +13,7 @@ export function useLogIn() {
     error,
   } = useMutation({
     mutationFn: logIn,
-    onMutate: () => {
-      dispatch({ type: "LOGIN_REQUEST" });
-    },
+
     onSuccess: async (data) => {
       dispatch({ type: "LOGIN_SUCCESS", payload: data.user });
       const token = data.token; // make sure 'token' is from the response

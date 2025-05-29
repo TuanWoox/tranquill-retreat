@@ -31,6 +31,7 @@ export default function Reservation({ cabin, settings }) {
 
   const { createBookingFn, isLoading: isSubmitting } = useCreateBooking();
 
+  // Your existing handlers remain the same
   const handleDateChange = (newRange) => {
     setDateRange(newRange);
   };
@@ -86,19 +87,23 @@ export default function Reservation({ cabin, settings }) {
     createBookingFn(bookingData);
   };
 
+  // Authentication required screen remains the same
   if (!isAuthenticated) {
     return (
-      <LinearGradient colors={["#1E293B", "#0F172A"]} className="flex-1">
-        <StatusBar barStyle="light-content" />
+      <LinearGradient
+        colors={["rgba(15, 23, 42, 0.85)", "rgba(30, 41, 59, 0.85)"]}
+        className="flex-1 rounded-3xl overflow-hidden shadow-lg border border-[#d2af84]/20"
+      >
+        <StatusBar style="light" />
         <View className="flex-1 justify-center items-center p-5">
-          <Ionicons name="log-in-outline" size={60} color="#FBBF24" />
+          <Ionicons name="log-in-outline" size={60} color="#d2af84" />
           <Text className="text-white text-2xl font-bold mt-4 mb-2">
             Authentication Required
           </Text>
           <Text className="text-gray-300 text-base text-center leading-6">
             Please{" "}
             <Text
-              className="text-amber-400 underline"
+              className="text-[#d2af84] underline"
               onPress={() => router.push("/auth/login")}
             >
               login
@@ -106,10 +111,10 @@ export default function Reservation({ cabin, settings }) {
             to reserve this cabin
           </Text>
           <TouchableOpacity
-            className="bg-amber-400/20 border border-amber-400 py-3 px-6 rounded-xl mt-6"
+            className="bg-[#d2af84]/20 border border-[#d2af84]/30 py-3 px-6 rounded-xl mt-6"
             onPress={() => router.push("/auth/login")}
           >
-            <Text className="text-amber-400 text-base font-semibold">
+            <Text className="text-[#d2af84] text-base font-semibold">
               Go to Login
             </Text>
           </TouchableOpacity>
@@ -132,34 +137,37 @@ export default function Reservation({ cabin, settings }) {
   const maxGuests = cabin?.maxCapacity || settings?.maxNumberOfGuests || 8;
 
   return (
-    <LinearGradient colors={["#1E293B", "#0F172A"]} className="flex-1">
+    <LinearGradient
+      colors={["rgba(15, 23, 42, 0.55)", "rgba(30, 41, 59, 0.55)"]}
+      className="flex-1 rounded-3xl overflow-hidden shadow-lg border border-[#d2af84]/20"
+    >
       <StatusBar barStyle="light-content" />
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+      <ScrollView
+        className="flex-1 rounded-3xl"
+        showsVerticalScrollIndicator={false}
+      >
         {/* User Header With Card Effect */}
-        <View className="mx-4 mt-4 rounded-2xl overflow-hidden shadow-lg">
-          <LinearGradient
-            colors={["#334155", "#1E293B"]}
-            className="flex-row justify-between items-center p-4 rounded-2xl"
-          >
+        <View className="mx-4 mt-4 bg-black/20 rounded-3xl p-5 shadow-md border border-[#d2af84]/20">
+          <View className="flex-col gap-2">
             <View className="flex-col p-4">
-              <Text className="text-slate-400 text-sm mb-1">Welcome </Text>
-              <Text className="text-amber-400 text-xl font-bold">
+              <Text className="text-slate-400 text-lg mb-1">Welcome </Text>
+              <Text className="text-[#d2af84] text-3xl font-bold">
                 {displayName}
               </Text>
             </View>
-          </LinearGradient>
+          </View>
         </View>
 
         {/* Cabin Card Preview */}
         {cabin && (
-          <View className="mx-4 mt-4 bg-slate-600 rounded-2xl p-4 shadow-md">
+          <View className="mx-4 mt-4 bg-black/20 rounded-3xl p-5 shadow-md border border-[#d2af84]/20">
             <View className="flex-col gap-2">
-              <Text className="text-white text-lg font-semibold">
+              <Text className="text-[#d2af84] text-2xl font-semibold">
                 {cabin.name}
               </Text>
-              <View className="flex-row items-center bg-black/20 px-2 py-1 rounded-xl self-start gap-1.5">
+              <View className="flex-row items-center bg-black/40 px-3 py-1.5 rounded-full self-start gap-1.5 border border-[#d2af84]/10">
                 <Ionicons name="bed-outline" size={14} color="#E5E7EB" />
-                <Text className="text-gray-300 text-xs">
+                <Text className="text-gray-300 text-lg">
                   Max {cabin.maxCapacity} guests
                 </Text>
               </View>
@@ -183,10 +191,10 @@ export default function Reservation({ cabin, settings }) {
         />
 
         {/* Guest Details Section */}
-        <View className="mx-4 mt-6 bg-slate-600 rounded-2xl p-4 shadow-sm">
+        <View className="mx-4 mt-6 bg-black/20 rounded-3xl p-5 shadow-sm border border-[#d2af84]/20">
           <View className="flex-row items-center mb-4 gap-2">
-            <FontAwesome5 name="users" size={18} color="#FBBF24" />
-            <Text className="text-white text-lg font-semibold">
+            <FontAwesome5 name="users" size={18} color="#d2af84" />
+            <Text className="text-[#d2af84] text-2xl font-semibold">
               Guest Details
             </Text>
           </View>
@@ -196,7 +204,7 @@ export default function Reservation({ cabin, settings }) {
               Number of Guests
             </Text>
             <TouchableOpacity
-              className="bg-slate-800 rounded-xl p-4 flex-row justify-between items-center border border-white/10"
+              className="bg-black/30 rounded-xl p-4 flex-row justify-between items-center border border-[#d2af84]/10"
               onPress={() => setShowGuestModal(true)}
             >
               <Text className="text-gray-300 text-base">
@@ -222,7 +230,7 @@ export default function Reservation({ cabin, settings }) {
                 value={hasBreakfast}
                 onValueChange={(value) => setHasBreakfast(value)}
                 trackColor={{ false: "#334155", true: "#10B981" }}
-                thumbColor={hasBreakfast ? "#FBBF24" : "#E5E7EB"}
+                thumbColor={hasBreakfast ? "#d2af84" : "#E5E7EB"}
                 ios_backgroundColor="#334155"
               />
             </View>
@@ -230,16 +238,16 @@ export default function Reservation({ cabin, settings }) {
         </View>
 
         {/* Special Requests Section */}
-        <View className="mx-4 mt-6 bg-slate-600 rounded-2xl p-4 shadow-sm">
+        <View className="mx-4 mt-6 bg-black/20 rounded-3xl p-5 shadow-sm border border-[#d2af84]/20">
           <View className="flex-row items-center mb-4 gap-2">
-            <MaterialIcons name="note-add" size={20} color="#FBBF24" />
-            <Text className="text-white text-lg font-semibold">
+            <MaterialIcons name="note-add" size={20} color="#d2af84" />
+            <Text className="text-[#d2af84] text-2xl font-semibold">
               Special Requests
             </Text>
           </View>
 
           <TextInput
-            className="bg-slate-800 rounded-xl p-4 text-gray-300 text-base h-30 border border-white/10"
+            className="bg-black/30 rounded-xl p-4 text-gray-300 text-base h-30 border border-[#d2af84]/10"
             placeholder="Any special requests, allergies, etc."
             placeholderTextColor="#94A3B8"
             value={observations}
@@ -252,7 +260,7 @@ export default function Reservation({ cabin, settings }) {
 
         {/* Price Summary Section */}
         {from && to && (
-          <View className="mx-4 mt-6 bg-slate-600 rounded-2xl p-4">
+          <View className="mx-4 mt-6 bg-black/20 rounded-3xl p-5 border border-[#d2af84]/20">
             <Text className="text-white text-lg font-semibold mb-4">
               Price Summary
             </Text>
@@ -279,11 +287,11 @@ export default function Reservation({ cabin, settings }) {
               </View>
             )}
 
-            <View className="h-px bg-white/10 my-3" />
+            <View className="h-px bg-[#d2af84]/10 my-3" />
 
             <View className="flex-row justify-between mt-1">
               <Text className="text-white text-base font-semibold">Total</Text>
-              <Text className="text-green-500 text-lg font-bold">
+              <Text className="text-[#d2af84] text-lg font-bold">
                 ${totalPrice.toFixed(2)}
               </Text>
             </View>
@@ -293,7 +301,7 @@ export default function Reservation({ cabin, settings }) {
         {/* Reserve Button */}
         {from && to ? (
           <TouchableOpacity
-            className="mx-4 mt-8 rounded-3xl overflow-hidden shadow-lg shadow-[#FBBF24]/40 elevation-8 "
+            className="mx-4 mt-8 rounded-3xl overflow-hidden shadow-lg shadow-[#d2af84]/40 elevation-8"
             onPress={handleCreateBooking}
             disabled={isSubmitting}
             activeOpacity={0.9}
@@ -301,8 +309,8 @@ export default function Reservation({ cabin, settings }) {
             <LinearGradient
               colors={
                 isSubmitting
-                  ? ["#D97706", "#F59E0B", "#FBBF24"]
-                  : ["#F59E0B", "#FBBF24", "#FCD34D"]
+                  ? ["#946c42", "#b39064", "#d2af84"]
+                  : ["#b39064", "#d2af84", "#e4cea3"]
               }
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
@@ -326,11 +334,11 @@ export default function Reservation({ cabin, settings }) {
             </LinearGradient>
           </TouchableOpacity>
         ) : (
-          <View className="mx-4 mt-8 flex-row items-center justify-center space-x-3 bg-gradient-to-r from-[#FBBF24]/15 via-[#FBBF24]/10 to-[#FBBF24]/15 py-6 px-8 rounded-3xl border-2 border-[#FBBF24]/40 border-dashed shadow-lg shadow-[#FBBF24]/20 min-h-[64px]">
-            <View className="p-2 bg-[#FBBF24]/20 rounded-full">
-              <Ionicons name="calendar-outline" size={28} color="#FBBF24" />
+          <View className="mx-4 mt-8 flex-row items-center justify-center space-x-3 bg-gradient-to-r from-[#d2af84]/15 via-[#d2af84]/10 to-[#d2af84]/15 py-6 px-8 rounded-3xl border-2 border-[#d2af84]/40 border-dashed shadow-lg shadow-[#d2af84]/20 min-h-[64px]">
+            <View className="p-2 bg-[#d2af84]/20 rounded-full">
+              <Ionicons name="calendar-outline" size={28} color="#d2af84" />
             </View>
-            <Text className="text-[#FBBF24] text-lg font-bold tracking-wide">
+            <Text className="text-[#d2af84] text-lg font-bold tracking-wide">
               Start by selecting your dates
             </Text>
           </View>
@@ -347,13 +355,13 @@ export default function Reservation({ cabin, settings }) {
         animationType="fade"
         onRequestClose={() => setShowGuestModal(false)}
       >
-        <View className="flex-1 bg-black/70 justify-center items-center p-5">
-          <View className="w-full max-w-sm rounded-2xl overflow-hidden">
+        <View className="flex-1 bg-black/60 justify-center items-center p-5">
+          <View className="w-full max-w-sm rounded-3xl overflow-hidden border border-[#d2af84]/20">
             <LinearGradient
-              colors={["#334155", "#1E293B"]}
+              colors={["rgba(51, 65, 85, 0.8)", "rgba(30, 41, 59, 0.8)"]}
               className="max-h-96"
             >
-              <View className="flex-row justify-between items-center p-5 border-b border-white/10">
+              <View className="flex-row justify-between items-center p-5 border-b border-[#d2af84]/10">
                 <Text className="text-white text-lg font-semibold">
                   Select Number of Guests
                 </Text>
@@ -370,8 +378,8 @@ export default function Reservation({ cabin, settings }) {
                   (guestCount) => (
                     <TouchableOpacity
                       key={guestCount}
-                      className={`flex-row justify-between items-center p-4 border-b border-white/10 ${
-                        numGuests === guestCount ? "bg-amber-400/10" : ""
+                      className={`flex-row justify-between items-center p-4 border-b border-[#d2af84]/10 ${
+                        numGuests === guestCount ? "bg-[#d2af84]/10" : ""
                       }`}
                       onPress={() => handleGuestSelect(guestCount)}
                     >
@@ -380,13 +388,13 @@ export default function Reservation({ cabin, settings }) {
                           name="users"
                           size={16}
                           color={
-                            numGuests === guestCount ? "#FBBF24" : "#94A3B8"
+                            numGuests === guestCount ? "#d2af84" : "#94A3B8"
                           }
                         />
                         <Text
                           className={`text-base ${
                             numGuests === guestCount
-                              ? "text-amber-400 font-semibold"
+                              ? "text-[#d2af84] font-semibold"
                               : "text-gray-300"
                           }`}
                         >
@@ -397,7 +405,7 @@ export default function Reservation({ cabin, settings }) {
                         <Ionicons
                           name="checkmark-circle"
                           size={20}
-                          color="#FBBF24"
+                          color="#d2af84"
                         />
                       )}
                     </TouchableOpacity>
