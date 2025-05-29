@@ -125,7 +125,6 @@ const AuthProvider = ({ children }) => {
         />
       );
     }
-    return <EntryPointFail error={state.error} />;
   }
 
   return (
