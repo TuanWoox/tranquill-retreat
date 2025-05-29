@@ -18,6 +18,7 @@ import SortFactory from "@/patterns/factory/cabin/factoryPattern";
 import { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AntDesign } from "@expo/vector-icons";
+import NotFoundCard from "@/components/NotFoundCard";
 
 // Initialize sorter with default strategy
 const sorter = new CabinSorter(new SortByNameAsc());
@@ -200,6 +201,18 @@ export default function Index() {
             {/* Cabin List */}
             {isCabinsLoading ? (
               <Spinner />
+            ) : sortedCabins.length === 0 ? (
+              <NotFoundCard
+                title="No Cabins Available"
+                message="We couldn't find any cabins at the moment."
+                suggestion={
+                  role === "admin"
+                    ? "Click 'Create New Cabin' to add your first cabin."
+                    : "Please check back later or contact support."
+                }
+                icon="home"
+                iconColor="#d2af84"
+              />
             ) : (
               <CabinList cabins={sortedCabins} role={role} />
             )}

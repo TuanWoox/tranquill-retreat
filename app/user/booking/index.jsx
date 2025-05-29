@@ -14,6 +14,7 @@ import FilterFactory from "@/patterns/factory/booking/factoryPattern";
 import { BookingFilter } from "@/patterns/strategy/booking/sortStrategies";
 import { FilterByAll } from "@/patterns/strategy/booking/concreateStrategies";
 import BookingMagementHeader from "@/components/BookingMagementHeader";
+import NotFoundCard from "@/components/NotFoundCard";
 
 const SORT_OPTIONS = [
   { key: "all", label: "All" },
@@ -158,11 +159,13 @@ const ReservationsScreen = () => {
         {filteredBookings && filteredBookings.length > 0 ? (
           <BookingList bookings={filteredBookings} />
         ) : (
-          <View className="flex-1 items-center justify-center">
-            <Text className="text-slate-400 text-lg font-semibold">
-              No reservations found
-            </Text>
-          </View>
+          <NotFoundCard
+            title="No Reservations Found"
+            message="You have no bookings matching this filter."
+            suggestion="Try a different filter or book your next stay!"
+            icon="calendar"
+            iconColor="#d2af84"
+          />
         )}
       </View>
     </>

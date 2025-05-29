@@ -20,6 +20,7 @@ import ModalSelector from "react-native-modal-selector";
 import { AntDesign, Feather } from "@expo/vector-icons";
 import Spinner from "@/components/Spinner";
 import { useGetSetting } from "@/hooks/useGetSetting";
+import NotFoundCard from "@/components/NotFoundCard";
 
 const EditBookingScreen = () => {
   const { id } = useLocalSearchParams();
@@ -49,11 +50,7 @@ const EditBookingScreen = () => {
   }, [booking, setValue]);
 
   if (isGettingTheBooking) {
-    return (
-      <Spinner>
-        <Text className="text-black">Fetching The Booking</Text>
-      </Spinner>
-    );
+    return <Spinner>Fetching The Booking</Spinner>;
   }
 
   const onSubmit = async (formData) => {
@@ -74,9 +71,14 @@ const EditBookingScreen = () => {
   if (bookingError || !booking) {
     return (
       <View className="flex-1 items-center justify-center">
-        <Text className="text-white text-lg font-semibold">
-          Error loading booking.
-        </Text>
+        <NotFoundCard
+          title="Booking Not Found"
+          message="Sorry, we couldn't find the booking you're trying to edit."
+          suggestion="Please check the link or try again later."
+          icon="calendar"
+          iconColor="#eab308"
+          error={bookingError}
+        />
       </View>
     );
   }

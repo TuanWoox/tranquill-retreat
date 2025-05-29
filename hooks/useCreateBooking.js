@@ -44,7 +44,7 @@ export const useCreateBooking = () => {
         text2: "Booking Successfully",
       });
 
-      router.push("/user/booking");
+      router.replace("/thankyou");
     },
     onError: (error) => {
       Toast.show({

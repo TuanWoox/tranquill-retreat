@@ -27,6 +27,7 @@ import HeaderSection from "@/components/HeaderSection";
 import ActionSection from "@/components/ActionSection";
 import RatingSection from "@/components/RatingSection";
 import ButtonBack from "@/components/ButtonBack";
+import NotFoundCard from "@/components/NotFoundCard";
 
 const formatDistanceFromNow = (dateStr) =>
   formatDistance(parseISO(dateStr), new Date(), {
@@ -42,21 +43,18 @@ export default function BookingDetail() {
     error: deleteError,
   } = useDeleteBooking();
 
-  if (isLoading) return <Spinner />;
+  if (isLoading) return <Spinner>Fetching The Booking</Spinner>;
 
   if (error || !booking)
     return (
-      <View className="flex-1 justify-center items-center bg-[#181b20]">
-        <View className="items-center p-10">
-          <AntDesign name="exclamationcircleo" size={64} color="#ff4d4f" />
-          <Text className="text-[#ff4d4f] text-xl font-bold mt-4">
-            Booking not found
-          </Text>
-          <Text className="text-[#94a3b8] text-sm mt-2">
-            Please try again later
-          </Text>
-        </View>
-      </View>
+      <NotFoundCard
+        title="Booking Not Found"
+        message="Sorry, we couldn't find the booking you're looking for."
+        suggestion="Please check the link or try again later."
+        icon="calendar"
+        iconColor="#eab308"
+        error={error}
+      />
     );
 
   const {
@@ -81,7 +79,8 @@ export default function BookingDetail() {
   const canDelete = status?.toLowerCase() === "confirmed";
 
   // Determine booking status for rating section
-  const bookingStatus = status?.toLowerCase() === "checked-out" ? "Past" : status;
+  const bookingStatus =
+    status?.toLowerCase() === "checked-out" ? "Past" : status;
 
   const onDelete = () => {
     Alert.alert(
@@ -106,12 +105,7 @@ export default function BookingDetail() {
   if (status?.toLowerCase() === "checked-out") statusColor = "#eab308";
 
   return (
-    <ImageBackground
-      source={require("@/assets/images/aboutBackground.jpg")}
-      className="flex-1 w-full h-full"
-      resizeMode="cover"
-    >
-      <View className="absolute inset-0 bg-black/70" />
+    <>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1"
@@ -173,12 +167,12 @@ export default function BookingDetail() {
               onDelete={onDelete}
               id={_id}
             />
-            
+
             {/* Back Button */}
             <ButtonBack />
           </ScrollView>
         </SafeAreaView>
       </KeyboardAvoidingView>
-    </ImageBackground>
+    </>
   );
 }
