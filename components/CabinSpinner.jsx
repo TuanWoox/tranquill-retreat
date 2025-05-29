@@ -1,19 +1,28 @@
 import React from "react";
 import { ActivityIndicator, Text, View, Image } from "react-native";
+import BackgroundLayout from "./BackgroundLayout";
 
 const CabinSpinner = () => {
   return (
-    <View className="flex-1 bg-[#4B3F30] justify-center items-center">
-      <Image
-        source={require("../assets/images/logoload.jpg")} // Optional logo/image
-        style={{ width: 100, height: 100, marginBottom: 20 }}
-        resizeMode="contain"
-      />
-      <ActivityIndicator size="large" color="#D2AF84" />
-      <Text className="text-[#D2AF84] mt-4 text-lg font-semibold">
-        Đang tải dữ liệu...
-      </Text>
-    </View>
+    <BackgroundLayout>
+      <View className="flex-1 justify-center items-center">
+        <View className="bg-black/70 p-8 rounded-2xl items-center shadow-2xl border border-[#d2af84]/40">
+          <Image
+            source={require("../assets/images/logo.png")}
+            style={{ width: 90, height: 90, marginBottom: 18 }}
+            resizeMode="contain"
+          />
+          <ActivityIndicator
+            size="large"
+            color="#d2af84"
+            style={{ marginBottom: 12 }}
+          />
+          <Text className="text-[#d2af84] text-xl font-bold mb-1 text-center drop-shadow-lg">
+            Please wait...
+          </Text>
+        </View>
+      </View>
+    </BackgroundLayout>
   );
 };
 

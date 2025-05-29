@@ -1,7 +1,8 @@
-// context/AuthContext.js
 import { createContext, useContext, useEffect, useReducer } from "react";
 import { validateJWT } from "../services/authService";
 import CabinSpinner from "@/components/CabinSpinner";
+import NotFoundCard from "@/components/NotFoundCard"; // Reuse your not found card for error display
+import EntryPointFail from "@/components/EntryPointFail";
 
 // Initial state for authentication
 const initialState = {
@@ -21,7 +22,7 @@ const authReducer = (state, action) => {
         isAuthenticated: true,
         loading: false,
         error: null,
-        user: action.payload, // ✅ Add this line
+        user: action.payload,
       };
     case "SESSION_VALIDATE_FAILURE":
       return {
@@ -31,7 +32,6 @@ const authReducer = (state, action) => {
         error: action.payload,
         user: null,
       };
-
     case "LOGIN_REQUEST":
       return { ...state, loading: true, error: null };
     case "LOGIN_SUCCESS":
@@ -40,7 +40,7 @@ const authReducer = (state, action) => {
         isAuthenticated: true,
         loading: false,
         error: null,
-        user: action.payload, // ✅ Add this line
+        user: action.payload,
       };
     case "LOGIN_FAILURE":
       return {
@@ -56,7 +56,7 @@ const authReducer = (state, action) => {
         isAuthenticated: false,
         loading: false,
         error: null,
-        user: null, // ✅ Clear user on logout
+        user: null,
       };
     case "UPDATE": {
       return {
@@ -64,7 +64,6 @@ const authReducer = (state, action) => {
         user: action.payload,
       };
     }
-
     default:
       return state;
   }
@@ -79,11 +78,10 @@ const AuthProvider = ({ children }) => {
     const checkSession = async () => {
       dispatch({ type: "SESSION_VALIDATE_REQUEST" });
       try {
-        const data = await validateJWT(); // should return user data
-
+        const data = await validateJWT();
         dispatch({
           type: "SESSION_VALIDATE_SUCCESS",
-          payload: data.user, // ✅ Pass user to payload
+          payload: data.user,
         });
       } catch (err) {
         dispatch({
@@ -98,6 +96,36 @@ const AuthProvider = ({ children }) => {
 
   if (state.loading) {
     return <CabinSpinner />;
+  }
+
+  if (state.error) {
+    if (
+      typeof state.error === "string" &&
+      state.error.toLowerCase().includes("wifi")
+    ) {
+      return (
+        <EntryPointFail
+          error={state.error}
+          title="WiFi is Off"
+          suggestion="Turn on WiFi or mobile data and try again."
+          icon="wifi"
+        />
+      );
+    }
+    if (
+      typeof state.error === "string" &&
+      state.error.toLowerCase().includes("connect to server")
+    ) {
+      return (
+        <EntryPointFail
+          error={state.error}
+          title="Cannot Connect to Server"
+          suggestion="Please check your internet connection or try again later."
+          icon="disconnect"
+        />
+      );
+    }
+    return <EntryPointFail error={state.error} />;
   }
 
   return (
